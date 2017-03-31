@@ -134,7 +134,7 @@ var SearchIndex = window.SearchIndex = (function() {
   // ----------------
 
   function normalizeTokens(tokens) {
-   // filter out falsy tokens
+    // filter out falsy tokens
     tokens = _.filter(tokens, function(token) { return !!token; });
 
     // normalize tokens

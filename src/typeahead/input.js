@@ -60,9 +60,9 @@ var Input = (function() {
     // if no hint, noop all the hint related functions
     if (this.$hint.length === 0) {
       this.setHint =
-      this.getHint =
-      this.clearHint =
-      this.clearHintIfInvalid = _.noop;
+        this.getHint =
+          this.clearHint =
+            this.clearHintIfInvalid = _.noop;
     }
 
     this.onSync('cursorchange', this._updateDescendent);
@@ -293,7 +293,7 @@ var Input = (function() {
       selectionStart = this.$input[0].selectionStart;
 
       if (_.isNumber(selectionStart)) {
-       return selectionStart === valueLength;
+        return selectionStart === valueLength;
       }
 
       else if (document.selection) {

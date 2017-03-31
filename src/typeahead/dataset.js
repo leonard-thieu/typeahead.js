@@ -163,7 +163,7 @@ var Dataset = (function() {
       this._resetLastSuggestion();
       template && this.$el.html(template({
         query: query,
-        dataset: this.name,
+        dataset: this.name
       }));
     },
 
@@ -173,7 +173,7 @@ var Dataset = (function() {
       this._resetLastSuggestion();
       template && this.$el.html(template({
         query: query,
-        dataset: this.name,
+        dataset: this.name
       }));
     },
 

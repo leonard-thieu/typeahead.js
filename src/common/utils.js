@@ -18,7 +18,7 @@ var _ = (function() {
 
     // http://stackoverflow.com/a/6969486
     escapeRegExChars: function(str) {
-      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+      return str.replace(/[\-\[\]\/{}()*+?.\\^$|]/g, '\\$&');
     },
 
     isString: function(obj) { return typeof obj === 'string'; },
@@ -65,7 +65,7 @@ var _ = (function() {
         }
       });
 
-      return !!result;
+      return result;
     },
 
     some: function(obj, test) {
@@ -79,7 +79,7 @@ var _ = (function() {
         }
       });
 
-      return !!result;
+      return result;
     },
 
     mixin: $.extend,
@@ -134,7 +134,7 @@ var _ = (function() {
       };
 
       return function() {
-        var now = new Date(),
+        var now       = new Date(),
             remaining = wait - (now - previous);
 
         context = this;
@@ -161,9 +161,10 @@ var _ = (function() {
 
     guid: function() {
       function _p8(s) {
-        var p = (Math.random().toString(16)+'000000000').substr(2,8);
-        return s ? '-' + p.substr(0,4) + '-' + p.substr(4,4) : p ;
+        var p = (Math.random().toString(16) + '000000000').substr(2, 8);
+        return s ? '-' + p.substr(0, 4) + '-' + p.substr(4, 4) : p;
       }
+
       return 'tt-' + _p8() + _p8(true) + _p8(true) + _p8();
     },
 

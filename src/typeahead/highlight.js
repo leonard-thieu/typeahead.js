@@ -10,15 +10,15 @@ var highlight = (function(doc) {
   'use strict';
 
   var defaults = {
-        node: null,
-        pattern: null,
-        tagName: 'strong',
-        className: null,
-        wordsOnly: false,
-        caseSensitive: false,
-        diacriticInsensitive: false
-      };
-      
+    node: null,
+    pattern: null,
+    tagName: 'strong',
+    className: null,
+    wordsOnly: false,
+    caseSensitive: false,
+    diacriticInsensitive: false
+  };
+
   // used for diacritic insensitivity
   var accented = {
     'A': '[Aa\xaa\xc0-\xc5\xe0-\xe5\u0100-\u0105\u01cd\u01ce\u0200-\u0203\u0226\u0227\u1d2c\u1d43\u1e00\u1e01\u1e9a\u1ea0-\u1ea3\u2090\u2100\u2101\u213b\u249c\u24b6\u24d0\u3371-\u3374\u3380-\u3384\u3388\u3389\u33a9-\u33af\u33c2\u33ca\u33df\u33ff\uff21\uff41]',
@@ -102,19 +102,20 @@ var highlight = (function(doc) {
   // replace characters by their compositors
   // custom for diacritic insensitivity
   function accent_replacer(chr) {
-      return accented[chr.toUpperCase()] || chr;
+    return accented[chr.toUpperCase()] || chr;
   }
+
   function getRegex(patterns, caseSensitive, wordsOnly, diacriticInsensitive) {
-      var escapedPatterns = [], regexStr;
-      for (var i = 0, len = patterns.length; i < len; i++) {
-          var escapedWord = _.escapeRegExChars(patterns[i]);
-          // added for diacritic insensitivity
-          if(diacriticInsensitive){
-              escapedWord = escapedWord.replace(/\S/g,accent_replacer);
-          }
-          escapedPatterns.push(escapedWord);
+    var escapedPatterns = [], regexStr;
+    for (var i = 0, len = patterns.length; i < len; i++) {
+      var escapedWord = _.escapeRegExChars(patterns[i]);
+      // added for diacritic insensitivity
+      if (diacriticInsensitive) {
+        escapedWord = escapedWord.replace(/\S/g, accent_replacer);
       }
-      regexStr = wordsOnly ? "\\b(" + escapedPatterns.join("|") + ")\\b" : "(" + escapedPatterns.join("|") + ")";
-      return caseSensitive ? new RegExp(regexStr) : new RegExp(regexStr, "i");
+      escapedPatterns.push(escapedWord);
+    }
+    regexStr = wordsOnly ? "\\b(" + escapedPatterns.join("|") + ")\\b" : "(" + escapedPatterns.join("|") + ")";
+    return caseSensitive ? new RegExp(regexStr) : new RegExp(regexStr, "i");
   }
 })(window.document);

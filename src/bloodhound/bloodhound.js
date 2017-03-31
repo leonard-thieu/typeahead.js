@@ -100,7 +100,7 @@ var Bloodhound = (function() {
     },
 
     _initialize: function initialize() {
-      var that = this, deferred;
+      var that = this;
 
       // in case this is a reinitialization, clear previous data
       this.clear();
@@ -158,7 +158,7 @@ var Bloodhound = (function() {
 
         // exclude duplicates
         _.each(remote, function(r) {
-           !_.some(local, function(l) {
+          !_.some(local, function(l) {
             return that.identify(r) === that.identify(l);
           }) && nonDuplicates.push(r);
         });

@@ -8,8 +8,8 @@ var Transport = (function() {
   'use strict';
 
   var pendingRequestsCount = 0,
-      pendingRequests = {},
-      sharedCache = new LruCache(10);
+      pendingRequests      = {},
+      sharedCache          = new LruCache(10);
 
   // constructor
   // -----------

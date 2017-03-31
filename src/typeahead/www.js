@@ -59,7 +59,7 @@ var WWW = (function() {
   }
 
   function buildCss() {
-    var css =  {
+    var css = {
       wrapper: {
         position: 'relative',
         display: 'inline-block'
@@ -95,14 +95,14 @@ var WWW = (function() {
       },
       rtl: {
         left: 'auto',
-        right:' 0'
+        right: ' 0'
       }
     };
 
     // ie specific styling
     if (_.isMsie()) {
-       // ie6-8 (and 9?) doesn't fire hover and click events for elements with
-       // transparent backgrounds, for a workaround, use 1x1 transparent gif
+      // ie6-8 (and 9?) doesn't fire hover and click events for elements with
+      // transparent backgrounds, for a workaround, use 1x1 transparent gif
       _.mixin(css.input, {
         backgroundImage: 'url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)'
       });

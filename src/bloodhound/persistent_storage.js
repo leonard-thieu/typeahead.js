@@ -51,10 +51,10 @@ var PersistentStorage = (function() {
 
     _noop: function() {
       this.get =
-      this.set =
-      this.remove =
-      this.clear =
-      this.isExpired = _.noop;
+        this.set =
+          this.remove =
+            this.clear =
+              this.isExpired = _.noop;
     },
 
     _safeSet: function(key, val) {
@@ -111,7 +111,7 @@ var PersistentStorage = (function() {
     isExpired: function(key) {
       var ttl = decode(this.ls.getItem(this._ttlKey(key)));
 
-      return _.isNumber(ttl) && now() > ttl ? true : false;
+      return !!(_.isNumber(ttl) && now() > ttl);
     }
   });
 
