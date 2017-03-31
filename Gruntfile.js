@@ -2,32 +2,32 @@ var semver = require('semver'),
     f = require('util').format,
     files = {
       common: [
-      'src/common/utils.js'
+        'src/common/utils.js'
       ],
       bloodhound: [
-      'src/bloodhound/version.js',
-      'src/bloodhound/tokenizers.js',
-      'src/bloodhound/lru_cache.js',
-      'src/bloodhound/persistent_storage.js',
-      'src/bloodhound/transport.js',
-      'src/bloodhound/search_index.js',
-      'src/bloodhound/prefetch.js',
-      'src/bloodhound/remote.js',
-      'src/bloodhound/options_parser.js',
-      'src/bloodhound/bloodhound.js'
+        'src/bloodhound/version.js',
+        'src/bloodhound/tokenizers.js',
+        'src/bloodhound/lru_cache.js',
+        'src/bloodhound/persistent_storage.js',
+        'src/bloodhound/transport.js',
+        'src/bloodhound/search_index.js',
+        'src/bloodhound/prefetch.js',
+        'src/bloodhound/remote.js',
+        'src/bloodhound/options_parser.js',
+        'src/bloodhound/bloodhound.js'
       ],
       typeahead: [
-      'src/typeahead/www.js',
-      'src/typeahead/event_bus.js',
-      'src/typeahead/event_emitter.js',
-      'src/typeahead/highlight.js',
-      'src/typeahead/input.js',
-      'src/typeahead/dataset.js',
-      'src/typeahead/menu.js',
-      'src/typeahead/status.js',
-      'src/typeahead/default_menu.js',
-      'src/typeahead/typeahead.js',
-      'src/typeahead/plugin.js'
+        'src/typeahead/www.js',
+        'src/typeahead/event_bus.js',
+        'src/typeahead/event_emitter.js',
+        'src/typeahead/highlight.js',
+        'src/typeahead/input.js',
+        'src/typeahead/dataset.js',
+        'src/typeahead/menu.js',
+        'src/typeahead/status.js',
+        'src/typeahead/default_menu.js',
+        'src/typeahead/typeahead.js',
+        'src/typeahead/plugin.js'
       ]
     };
 
@@ -160,7 +160,7 @@ module.exports = function(grunt) {
           patterns: [
             {
               match: '%VERSION%',
-              replacement: '<%= version %>',
+              replacement: '<%= version %>'
             }
           ],
           usePrefix: false

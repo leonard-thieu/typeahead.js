@@ -8,8 +8,8 @@ var Transport = (function() {
   'use strict';
 
   var pendingRequestsCount = 0,
-      pendingRequests      = {},
-      sharedCache          = new LruCache(10);
+      pendingRequests = {},
+      sharedCache = new LruCache(10);
 
   // constructor
   // -----------
@@ -68,7 +68,7 @@ var Transport = (function() {
       else if (pendingRequestsCount < this.maxPendingRequests) {
         pendingRequestsCount++;
         pendingRequests[fingerprint] =
-          this._send(o).done(done).fail(fail).always(always);
+            this._send(o).done(done).fail(fail).always(always);
       }
 
       // at the pending request threshold, so hang out in the on deck circle

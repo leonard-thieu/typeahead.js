@@ -51,10 +51,10 @@ var PersistentStorage = (function() {
 
     _noop: function() {
       this.get =
-        this.set =
-          this.remove =
-            this.clear =
-              this.isExpired = _.noop;
+          this.set =
+              this.remove =
+                  this.clear =
+                      this.isExpired = _.noop;
     },
 
     _safeSet: function(key, val) {

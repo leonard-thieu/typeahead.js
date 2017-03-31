@@ -61,8 +61,8 @@ var Prefetch = (function() {
       // don't match or if the protocol it was originally stored under
       // has changed
       isExpired =
-        stored.thumbprint !== this.thumbprint ||
-        stored.protocol !== location.protocol;
+          stored.thumbprint !== this.thumbprint ||
+          stored.protocol !== location.protocol;
 
       // TODO: if expired, remove from local storage
 

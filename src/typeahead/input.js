@@ -60,9 +60,9 @@ var Input = (function() {
     // if no hint, noop all the hint related functions
     if (this.$hint.length === 0) {
       this.setHint =
-        this.getHint =
-          this.clearHint =
-            this.clearHintIfInvalid = _.noop;
+          this.getHint =
+              this.clearHint =
+                  this.clearHintIfInvalid = _.noop;
     }
 
     this.onSync('cursorchange', this._updateDescendent);
@@ -158,7 +158,7 @@ var Input = (function() {
 
       areEquivalent = areQueriesEquivalent(val, this.query);
       hasDifferentWhitespace = areEquivalent ?
-        this.query.length !== val.length : false;
+          this.query.length !== val.length : false;
 
       this.query = val;
 

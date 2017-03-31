@@ -211,20 +211,20 @@ var Dataset = (function() {
 
     _getFooter: function getFooter(query, suggestions) {
       return this.templates.footer ?
-        this.templates.footer({
-          query: query,
-          suggestions: suggestions,
-          dataset: this.name
-        }) : null;
+          this.templates.footer({
+            query: query,
+            suggestions: suggestions,
+            dataset: this.name
+          }) : null;
     },
 
     _getHeader: function getHeader(query, suggestions) {
       return this.templates.header ?
-        this.templates.header({
-          query: query,
-          suggestions: suggestions,
-          dataset: this.name
-        }) : null;
+          this.templates.header({
+            query: query,
+            suggestions: suggestions,
+            dataset: this.name
+          }) : null;
     },
 
     _resetLastSuggestion: function resetLastSuggestion() {

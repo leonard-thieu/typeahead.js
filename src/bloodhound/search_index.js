@@ -105,7 +105,7 @@ var SearchIndex = window.SearchIndex = (function() {
       });
 
       return matches ?
-        _.map(unique(matches), function(id) { return that.datums[id]; }) : [];
+          _.map(unique(matches), function(id) { return that.datums[id]; }) : [];
     },
 
     all: function all() {

@@ -86,8 +86,8 @@ var Menu = (function() {
       elBottom = elTop + $el.outerHeight(true);
       nodeScrollTop = this.$node.scrollTop();
       nodeHeight = this.$node.height() +
-        parseInt(this.$node.css('paddingTop'), 10) +
-        parseInt(this.$node.css('paddingBottom'), 10);
+          parseInt(this.$node.css('paddingTop'), 10) +
+          parseInt(this.$node.css('paddingBottom'), 10);
 
       if (elTop < 0) {
         this.$node.scrollTop(nodeScrollTop + elTop);
