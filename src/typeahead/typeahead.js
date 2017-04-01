@@ -11,9 +11,6 @@ var Typeahead = (function() {
   // -----------
 
   function Typeahead(o, www) {
-    var onFocused, onBlurred, onSelect, onOpen, onClose, onMoveUp,
-        onMoveDown, onQueryChanged, onWhitespaceChanged;
-
     o = o || {};
 
     if (!o.input) {
@@ -49,33 +46,22 @@ var Typeahead = (function() {
 
     this.menu.bind()
     .onSync('selectableClicked', this._onSelectableClicked, this)
+    .onSync('datasetCleared', this._onDatasetCleared, this)
+    .onSync('datasetRendered', this._onDatasetRendered, this)
     .onSync('asyncRequested', this._onAsyncRequested, this)
     .onSync('asyncCanceled', this._onAsyncCanceled, this)
-    .onSync('asyncReceived', this._onAsyncReceived, this)
-    .onSync('datasetRendered', this._onDatasetRendered, this)
-    .onSync('datasetCleared', this._onDatasetCleared, this);
-
-    // composed event handlers for input
-    onFocused = c(this, 'activate', 'open', '_onFocused');
-    onBlurred = c(this, 'deactivate', '_onBlurred');
-    onSelect = c(this, 'isActive', 'isOpen', '_onSelect');
-    onOpen = c(this, 'isActive', '_onOpen');
-    onClose = c(this, 'isActive', '_onClose');
-    onMoveUp = c(this, 'isActive', 'isOpen', '_onMoveUp');
-    onMoveDown = c(this, 'isActive', 'isOpen', '_onMoveDown');
-    onQueryChanged = c(this, '_openIfActive', '_onQueryChanged');
-    onWhitespaceChanged = c(this, '_openIfActive', '_onWhitespaceChanged');
+    .onSync('asyncReceived', this._onAsyncReceived, this);
 
     this.input.bind()
-    .onSync('focused', onFocused, this)
-    .onSync('blurred', onBlurred, this)
-    .onSync('select', onSelect, this)
-    .onSync('open', onOpen, this)
-    .onSync('close', onClose, this)
-    .onSync('moveUp', onMoveUp, this)
-    .onSync('moveDown', onMoveDown, this)
-    .onSync('queryChanged', onQueryChanged, this)
-    .onSync('whitespaceChanged', onWhitespaceChanged, this)
+    .onSync('focused', this._onFocused, this)
+    .onSync('blurred', this._onBlurred, this)
+    .onSync('select', this._onSelect, this)
+    .onSync('open', this._onOpen, this)
+    .onSync('close', this._onClose, this)
+    .onSync('moveUp', this._onMoveUp, this)
+    .onSync('moveDown', this._onMoveDown, this)
+    .onSync('queryChanged', this._onQueryChanged, this)
+    .onSync('whitespaceChanged', this._onWhitespaceChanged, this)
     .onSync('langDirChanged', this._onLangDirChanged, this);
   }
 
@@ -118,6 +104,8 @@ var Typeahead = (function() {
 
     // region ### event handlers
 
+    // region ### menu
+
     _onSelectableClicked: function onSelectableClicked(type, $el) {
       this.select($el);
     },
@@ -143,57 +131,85 @@ var Typeahead = (function() {
       this.eventBus.trigger('asyncreceive', query, dataset);
     },
 
+    // endregion
+
+    // region ### input
+
     _onFocused: function onFocused() {
-      this._minLengthMet() && this.menu.update(this.input.getQuery());
+      if (this.activate()) {
+        this._minLengthMet() && this.menu.update(this.input.getQuery());
+      }
     },
 
     _onBlurred: function onBlurred() {
-      if (this.input.hasQueryChangedSinceLastFocus()) {
-        this.eventBus.trigger('change', this.input.getQuery());
+      if (this.deactivate()) {
+        if (this.input.hasQueryChangedSinceLastFocus()) {
+          this.eventBus.trigger('change', this.input.getQuery());
+        }
       }
     },
 
     _onSelect: function onSelect(type, $e) {
       var $selectable;
 
-      if ($selectable = this.menu.getActiveSelectable()) {
-        if (this.select($selectable)) {
-          $e.preventDefault();
-          $e.stopImmediatePropagation();
+      if (this.isActive() && this.isOpen()) {
+        if ($selectable = this.menu.getActiveSelectable()) {
+          if (this.select($selectable)) {
+            $e.preventDefault();
+            $e.stopImmediatePropagation();
+          }
         }
       }
     },
 
     _onOpen: function onOpen(type, $e) {
-      this.open();
-      $e.preventDefault();
-      $e.stopImmediatePropagation();
+      if (this.isActive()) {
+        this.menu.update(this.input.getQuery());
+        this.open();
+        $e.preventDefault();
+        $e.stopImmediatePropagation();
+      }
     },
 
     _onClose: function onClose(type, $e) {
-      this.close();
-      $e.preventDefault();
-      $e.stopImmediatePropagation();
+      if (this.isActive()) {
+        this.close();
+        $e.preventDefault();
+        $e.stopImmediatePropagation();
+      }
     },
 
     _onMoveUp: function onMoveUp(type, $e) {
-      this.moveCursor(-1);
-      $e.preventDefault();
-      $e.stopImmediatePropagation();
+      if (this.isActive() && this.isOpen()) {
+        this.moveCursor(-1);
+        $e.preventDefault();
+        $e.stopImmediatePropagation();
+      }
     },
 
     _onMoveDown: function onMoveDown(type, $e) {
-      this.moveCursor(+1);
-      $e.preventDefault();
-      $e.stopImmediatePropagation();
+      if (this.isActive() && this.isOpen()) {
+        this.moveCursor(+1);
+        $e.preventDefault();
+        $e.stopImmediatePropagation();
+      }
     },
 
     _onQueryChanged: function onQueryChanged(e, query) {
-      this._minLengthMet(query) ? this.menu.update(query) : this.menu.empty();
+      if (this.isActive() && this.isOpen()) {
+        if (this._minLengthMet(query)) {
+          this.menu.update(query);
+        } else {
+          this.menu.empty();
+          this.close();
+        }
+      }
     },
 
     _onWhitespaceChanged: function onWhitespaceChanged() {
-      this._updateHint();
+      if (this._openIfActive()) {
+        this._updateHint();
+      }
     },
 
     _onLangDirChanged: function onLangDirChanged(e, dir) {
@@ -202,6 +218,8 @@ var Typeahead = (function() {
         this.menu.setLanguageDirection(dir);
       }
     },
+
+    // endregion
 
     // endregion
 
@@ -416,19 +434,4 @@ var Typeahead = (function() {
   });
 
   return Typeahead;
-
-  // helper functions
-  // ----------------
-
-  function c(ctx) {
-    var methods = [].slice.call(arguments, 1);
-
-    return function() {
-      var args = [].slice.call(arguments);
-
-      _.each(methods, function(method) {
-        return ctx[method].apply(ctx, args);
-      });
-    };
-  }
 })();

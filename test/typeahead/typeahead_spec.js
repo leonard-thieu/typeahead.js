@@ -206,21 +206,11 @@ describe('Typeahead', function() {
         this.input.trigger(eventName);
         expect(this.view.isActive()).toBe(true);
       });
-
-      it('should open menu', function() {
-        this.input.trigger(eventName);
-        expect(this.menu.open).toHaveBeenCalled();
-      });
     });
 
     describe('when active', function() {
       beforeEach(function() {
         this.view.activate();
-      });
-
-      it('should open menu', function() {
-        this.input.trigger(eventName);
-        expect(this.menu.open).toHaveBeenCalled();
       });
 
       it('should update menu for query if minLength met', function() {
@@ -476,9 +466,10 @@ describe('Typeahead', function() {
       });
     });
 
-    describe('when active', function() {
+    describe('when active and open', function() {
       beforeEach(function() {
         this.view.activate();
+        this.menu.isOpen.andReturn(true);
         spyOn(this.view, 'moveCursor');
       });
 
@@ -515,9 +506,10 @@ describe('Typeahead', function() {
       });
     });
 
-    describe('when active', function() {
+    describe('when active and open', function() {
       beforeEach(function() {
         this.view.activate();
+        this.menu.isOpen.andReturn(true);
         spyOn(this.view, 'moveCursor');
       });
 
@@ -553,15 +545,10 @@ describe('Typeahead', function() {
       });
     });
 
-    describe('when active', function() {
+    describe('when active and open', function() {
       beforeEach(function() {
         this.view.activate();
-        this.view.open();
-      });
-
-      it('should open menu', function() {
-        this.input.trigger(eventName, payload);
-        expect(this.menu.open).toHaveBeenCalled();
+        this.menu.isOpen.andReturn(true);
       });
 
       it('should empty menu if minLength is not satisfied', function() {
@@ -1237,4 +1224,3 @@ describe('Typeahead', function() {
 
   function prevent($e) { $e.preventDefault(); }
 });
-

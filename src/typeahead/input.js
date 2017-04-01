@@ -85,35 +85,36 @@ var Input = (function() {
     _onKeydown: function onKeydown($e) {
       // which is normalized and consistent (but not for ie)
       var key = $e.which || $e.keyCode;
-      var action;
+      var actions = [];
 
       switch (key) {
         case 9:
-          action = !$e.shiftKey ? 'moveDown' : 'moveUp';
+          actions.push('open');
+          $e.shiftKey ? actions.push('moveUp') : actions.push('moveDown');
           break;
         case 13:
-          action = 'select';
+          actions.push('select');
           break;
         case 27:
-          action = 'close';
+          actions.push('close');
           break;
         case 32:
           if ($e.ctrlKey) {
-            action = 'open';
+            actions.push('open');
           }
           break;
         case 38:
-          action = 'moveUp';
+          actions.push('moveUp');
           break;
         case 40:
-          action = 'moveDown';
+          actions.push('moveDown');
           break;
         default:
           break;
       }
 
-      if (action) {
-        this.trigger(action, $e);
+      for (var i = 0; i < actions.length; i++) {
+        this.trigger(actions[i], $e);
       }
     },
 
