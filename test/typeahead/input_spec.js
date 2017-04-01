@@ -1,10 +1,11 @@
 describe('Input', function() {
   var KEYS, www;
 
-   KEYS = {
+  KEYS = {
     enter: 13,
     esc: 27,
     tab: 9,
+    space: 32,
     left: 37,
     right: 39,
     up: 38,
@@ -72,63 +73,52 @@ describe('Input', function() {
   });
 
   describe('when the keydown DOM event is triggered by tab', function() {
-    it('should trigger tabKeyed if no modifiers were pressed', function() {
+    it('should trigger moveDown if no modifiers were pressed', function() {
       var spy;
 
-      this.view.onSync('tabKeyed', spy = jasmine.createSpy());
+      this.view.onSync('moveDown', spy = jasmine.createSpy());
       simulateKeyEvent(this.$input, 'keydown', KEYS.tab);
 
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should not trigger tabKeyed if modifiers were pressed', function() {
+    it('should trigger moveUp if shift was pressed', function() {
       var spy;
 
-      this.view.onSync('tabKeyed', spy = jasmine.createSpy());
+      this.view.onSync('moveUp', spy = jasmine.createSpy());
       simulateKeyEvent(this.$input, 'keydown', KEYS.tab, true);
 
-      expect(spy).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('when the keydown DOM event is triggered by esc', function() {
-    it('should trigger escKeyed', function() {
+    it('should trigger close', function() {
       var spy;
 
-      this.view.onSync('escKeyed', spy = jasmine.createSpy());
+      this.view.onSync('close', spy = jasmine.createSpy());
       simulateKeyEvent(this.$input, 'keydown', KEYS.esc);
 
       expect(spy).toHaveBeenCalled();
     });
   });
 
-  describe('when the keydown DOM event is triggered by left', function() {
-    it('should trigger leftKeyed', function() {
+  describe('when the keydown DOM event is triggered by space', function() {
+    it('should trigger open if ctrl was pressed', function() {
       var spy;
 
-      this.view.onSync('leftKeyed', spy = jasmine.createSpy());
-      simulateKeyEvent(this.$input, 'keydown', KEYS.left);
-
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('when the keydown DOM event is triggered by right', function() {
-    it('should trigger rightKeyed', function() {
-      var spy;
-
-      this.view.onSync('rightKeyed', spy = jasmine.createSpy());
-      simulateKeyEvent(this.$input, 'keydown', KEYS.right);
+      this.view.onSync('open', spy = jasmine.createSpy());
+      simulateKeyEvent(this.$input, 'keydown', KEYS.space, true);
 
       expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('when the keydown DOM event is triggered by enter', function() {
-    it('should trigger enterKeyed', function() {
+    it('should trigger select', function() {
       var spy;
 
-      this.view.onSync('enterKeyed', spy = jasmine.createSpy());
+      this.view.onSync('select', spy = jasmine.createSpy());
       simulateKeyEvent(this.$input, 'keydown', KEYS.enter);
 
       expect(spy).toHaveBeenCalled();
@@ -136,48 +126,24 @@ describe('Input', function() {
   });
 
   describe('when the keydown DOM event is triggered by up', function() {
-    it('should trigger upKeyed', function() {
+    it('should trigger moveUp', function() {
       var spy;
 
-      this.view.onSync('upKeyed', spy = jasmine.createSpy());
+      this.view.onSync('moveUp', spy = jasmine.createSpy());
       simulateKeyEvent(this.$input, 'keydown', KEYS.up);
 
       expect(spy).toHaveBeenCalled();
     });
-
-    it('should prevent default if no modifers were pressed', function() {
-      var $e = simulateKeyEvent(this.$input, 'keydown', KEYS.up);
-
-      expect($e.preventDefault).toHaveBeenCalled();
-    });
-
-    it('should not prevent default if modifers were pressed', function() {
-      var $e = simulateKeyEvent(this.$input, 'keydown', KEYS.up, true);
-
-      expect($e.preventDefault).not.toHaveBeenCalled();
-    });
   });
 
   describe('when the keydown DOM event is triggered by down', function() {
-    it('should trigger downKeyed', function() {
+    it('should trigger moveDown', function() {
       var spy;
 
-      this.view.onSync('downKeyed', spy = jasmine.createSpy());
+      this.view.onSync('moveDown', spy = jasmine.createSpy());
       simulateKeyEvent(this.$input, 'keydown', KEYS.down);
 
       expect(spy).toHaveBeenCalled();
-    });
-
-    it('should prevent default if no modifers were pressed', function() {
-      var $e = simulateKeyEvent(this.$input, 'keydown', KEYS.down);
-
-      expect($e.preventDefault).toHaveBeenCalled();
-    });
-
-    it('should not prevent default if modifers were pressed', function() {
-      var $e = simulateKeyEvent(this.$input, 'keydown', KEYS.down, true);
-
-      expect($e.preventDefault).not.toHaveBeenCalled();
     });
   });
 

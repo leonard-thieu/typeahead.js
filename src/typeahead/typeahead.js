@@ -11,9 +11,8 @@ var Typeahead = (function() {
   // -----------
 
   function Typeahead(o, www) {
-    var onFocused, onBlurred, onEnterKeyed, onTabKeyed, onEscKeyed, onUpKeyed,
-        onDownKeyed, onLeftKeyed, onRightKeyed, onQueryChanged,
-        onWhitespaceChanged;
+    var onFocused, onBlurred, onSelect, onOpen, onClose, onMoveUp,
+        onMoveDown, onQueryChanged, onWhitespaceChanged;
 
     o = o || {};
 
@@ -59,26 +58,22 @@ var Typeahead = (function() {
     // composed event handlers for input
     onFocused = c(this, 'activate', 'open', '_onFocused');
     onBlurred = c(this, 'deactivate', '_onBlurred');
-    onEnterKeyed = c(this, 'isActive', 'isOpen', '_onEnterKeyed');
-    onTabKeyed = c(this, 'isActive', 'isOpen', '_onTabKeyed');
-    onEscKeyed = c(this, 'isActive', '_onEscKeyed');
-    onUpKeyed = c(this, 'isActive', 'open', '_onUpKeyed');
-    onDownKeyed = c(this, 'isActive', 'open', '_onDownKeyed');
-    onLeftKeyed = c(this, 'isActive', 'isOpen', '_onLeftKeyed');
-    onRightKeyed = c(this, 'isActive', 'isOpen', '_onRightKeyed');
+    onSelect = c(this, 'isActive', 'isOpen', '_onSelect');
+    onOpen = c(this, 'isActive', '_onOpen');
+    onClose = c(this, 'isActive', '_onClose');
+    onMoveUp = c(this, 'isActive', 'isOpen', '_onMoveUp');
+    onMoveDown = c(this, 'isActive', 'isOpen', '_onMoveDown');
     onQueryChanged = c(this, '_openIfActive', '_onQueryChanged');
     onWhitespaceChanged = c(this, '_openIfActive', '_onWhitespaceChanged');
 
     this.input.bind()
     .onSync('focused', onFocused, this)
     .onSync('blurred', onBlurred, this)
-    .onSync('enterKeyed', onEnterKeyed, this)
-    .onSync('tabKeyed', onTabKeyed, this)
-    .onSync('escKeyed', onEscKeyed, this)
-    .onSync('upKeyed', onUpKeyed, this)
-    .onSync('downKeyed', onDownKeyed, this)
-    .onSync('leftKeyed', onLeftKeyed, this)
-    .onSync('rightKeyed', onRightKeyed, this)
+    .onSync('select', onSelect, this)
+    .onSync('open', onOpen, this)
+    .onSync('close', onClose, this)
+    .onSync('moveUp', onMoveUp, this)
+    .onSync('moveDown', onMoveDown, this)
     .onSync('queryChanged', onQueryChanged, this)
     .onSync('whitespaceChanged', onWhitespaceChanged, this)
     .onSync('langDirChanged', this._onLangDirChanged, this);
@@ -121,7 +116,7 @@ var Typeahead = (function() {
       $menu.on('mousedown.tt', function($e) { $e.preventDefault(); });
     },
 
-    // ### event handlers
+    // region ### event handlers
 
     _onSelectableClicked: function onSelectableClicked(type, $el) {
       this.select($el);
@@ -158,51 +153,39 @@ var Typeahead = (function() {
       }
     },
 
-    _onEnterKeyed: function onEnterKeyed(type, $e) {
+    _onSelect: function onSelect(type, $e) {
       var $selectable;
 
       if ($selectable = this.menu.getActiveSelectable()) {
         if (this.select($selectable)) {
           $e.preventDefault();
-          $e.stopPropagation();
+          $e.stopImmediatePropagation();
         }
       }
     },
 
-    _onTabKeyed: function onTabKeyed(type, $e) {
-      var $selectable;
-
-      if ($selectable = this.menu.getActiveSelectable()) {
-        this.select($selectable) && $e.preventDefault();
-      }
-
-      else if ($selectable = this.menu.getTopSelectable()) {
-        this.autocomplete($selectable) && $e.preventDefault();
-      }
+    _onOpen: function onOpen(type, $e) {
+      this.open();
+      $e.preventDefault();
+      $e.stopImmediatePropagation();
     },
 
-    _onEscKeyed: function onEscKeyed() {
+    _onClose: function onClose(type, $e) {
       this.close();
+      $e.preventDefault();
+      $e.stopImmediatePropagation();
     },
 
-    _onUpKeyed: function onUpKeyed() {
+    _onMoveUp: function onMoveUp(type, $e) {
       this.moveCursor(-1);
+      $e.preventDefault();
+      $e.stopImmediatePropagation();
     },
 
-    _onDownKeyed: function onDownKeyed() {
+    _onMoveDown: function onMoveDown(type, $e) {
       this.moveCursor(+1);
-    },
-
-    _onLeftKeyed: function onLeftKeyed() {
-      if (this.dir === 'rtl' && this.input.isCursorAtEnd()) {
-        this.autocomplete(this.menu.getActiveSelectable() || this.menu.getTopSelectable());
-      }
-    },
-
-    _onRightKeyed: function onRightKeyed() {
-      if (this.dir === 'ltr' && this.input.isCursorAtEnd()) {
-        this.autocomplete(this.menu.getActiveSelectable() || this.menu.getTopSelectable());
-      }
+      $e.preventDefault();
+      $e.stopImmediatePropagation();
     },
 
     _onQueryChanged: function onQueryChanged(e, query) {
@@ -220,7 +203,9 @@ var Typeahead = (function() {
       }
     },
 
-    // ### private
+    // endregion
+
+    // region ### private
 
     _openIfActive: function openIfActive() {
       this.isActive() && this.open();
@@ -256,7 +241,9 @@ var Typeahead = (function() {
       }
     },
 
-    // ### public
+    // endregion
+
+    // region ### public
 
     isEnabled: function isEnabled() {
       return this.enabled;
@@ -424,6 +411,8 @@ var Typeahead = (function() {
       this.input.destroy();
       this.menu.destroy();
     }
+
+    // endregion
   });
 
   return Typeahead;

@@ -4,7 +4,7 @@ describe('Typeahead', function() {
   www = WWW();
 
   beforeEach(function() {
-    var $fixture, $input;
+    var $fixture;
 
     jasmine.Input.useMock();
     jasmine.Dataset.useMock();
@@ -68,11 +68,11 @@ describe('Typeahead', function() {
     });
 
     it('should trigger typeahead:asyncrequest', function() {
-        var spy = jasmine.createSpy();
+      var spy = jasmine.createSpy();
 
-        this.$input.on('typeahead:asyncrequest', spy);
-        this.menu.trigger(eventName);
-        expect(spy).toHaveBeenCalled();
+      this.$input.on('typeahead:asyncrequest', spy);
+      this.menu.trigger(eventName);
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -84,11 +84,11 @@ describe('Typeahead', function() {
     });
 
     it('should trigger typeahead:asynccancel', function() {
-        var spy = jasmine.createSpy();
+      var spy = jasmine.createSpy();
 
-        this.$input.on('typeahead:asynccancel', spy);
-        this.menu.trigger(eventName);
-        expect(spy).toHaveBeenCalled();
+      this.$input.on('typeahead:asynccancel', spy);
+      this.menu.trigger(eventName);
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -100,11 +100,11 @@ describe('Typeahead', function() {
     });
 
     it('should trigger typeahead:asyncreceive', function() {
-        var spy = jasmine.createSpy();
+      var spy = jasmine.createSpy();
 
-        this.$input.on('typeahead:asyncreceive', spy);
-        this.menu.trigger(eventName);
-        expect(spy).toHaveBeenCalled();
+      this.$input.on('typeahead:asyncreceive', spy);
+      this.menu.trigger(eventName);
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -279,12 +279,12 @@ describe('Typeahead', function() {
     });
   });
 
-  describe('on enterKeyed', function() {
+  describe('on select', function() {
     var eventName, payload;
 
     beforeEach(function() {
-      eventName = 'enterKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault', 'stopPropagation']);
+      eventName = 'select';
+      payload = jasmine.createSpyObj('event', ['preventDefault', 'stopImmediatePropagation']);
     });
 
     describe('when idle', function() {
@@ -293,9 +293,9 @@ describe('Typeahead', function() {
       });
 
       it('should do nothing', function() {
-        spyOn(this.view, '_onEnterKeyed');
+        spyOn(this.view, '_onSelect');
         this.input.trigger(eventName, payload);
-        expect(this.view._onEnterKeyed).not.toHaveBeenCalled();
+        expect(this.view._onSelect).not.toHaveBeenCalled();
       });
     });
 
@@ -306,9 +306,9 @@ describe('Typeahead', function() {
       });
 
       it('should do nothing', function() {
-        spyOn(this.view, '_onEnterKeyed');
+        spyOn(this.view, '_onSelect');
         this.input.trigger(eventName, payload);
-        expect(this.view._onEnterKeyed).not.toHaveBeenCalled();
+        expect(this.view._onSelect).not.toHaveBeenCalled();
       });
     });
 
@@ -330,7 +330,7 @@ describe('Typeahead', function() {
         expect(this.view.select).toHaveBeenCalledWith($el);
       });
 
-      it('should prevent default and stop propagation if active selectable ', function() {
+      it('should prevent default and stop immediate propagation if active selectable', function() {
         var $el;
 
         $el = $('<bah>');
@@ -340,7 +340,7 @@ describe('Typeahead', function() {
         this.input.trigger(eventName, payload);
 
         expect(payload.preventDefault).toHaveBeenCalled();
-        expect(payload.stopPropagation).toHaveBeenCalled();
+        expect(payload.stopImmediatePropagation).toHaveBeenCalled();
       });
 
       it('should not select selectable if there is no active one', function() {
@@ -354,11 +354,8 @@ describe('Typeahead', function() {
         expect(this.view.select).not.toHaveBeenCalledWith($el);
       });
 
-      it('should not prevent default if no active selectale', function() {
-        var $el;
-
+      it('should not prevent default if no active selectable', function() {
         spyOn(this.view, 'select').andReturn(true);
-        $el = $('<bah>');
 
         this.input.trigger(eventName, payload);
 
@@ -379,12 +376,12 @@ describe('Typeahead', function() {
     });
   });
 
-  describe('on tabKeyed', function() {
+  describe('on open', function() {
     var eventName, payload;
 
     beforeEach(function() {
-      eventName = 'tabKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault']);
+      eventName = 'open';
+      payload = jasmine.createSpyObj('event', ['preventDefault', 'stopImmediatePropagation']);
     });
 
     describe('when idle', function() {
@@ -393,133 +390,38 @@ describe('Typeahead', function() {
       });
 
       it('should do nothing', function() {
-        spyOn(this.view, '_onTabKeyed');
+        spyOn(this.view, '_onOpen');
         this.input.trigger(eventName, payload);
-        expect(this.view._onTabKeyed).not.toHaveBeenCalled();
+        expect(this.view._onOpen).not.toHaveBeenCalled();
       });
     });
 
-    describe('when active and menu is closed', function() {
+    describe('when active', function() {
       beforeEach(function() {
         this.view.activate();
-        this.menu.isOpen.andReturn(false);
       });
 
-      it('should do nothing', function() {
-        spyOn(this.view, '_onTabKeyed');
+      it('should open', function() {
+        spyOn(this.view, 'open');
         this.input.trigger(eventName, payload);
-        expect(this.view._onTabKeyed).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when active and menu is open', function() {
-      beforeEach(function() {
-        this.view.activate();
-        this.menu.isOpen.andReturn(true);
+        expect(this.view.open).toHaveBeenCalled();
       });
 
-      it('should select selectable if there is an active one', function() {
-        var $el;
-
-        $el = $('<bah>');
-        spyOn(this.view, 'select');
-        this.menu.getActiveSelectable.andReturn($el);
-
+      it('should prevent default and stop immediate propagation', function() {
+        spyOn(this.view, 'open');
         this.input.trigger(eventName, payload);
-
-        expect(this.view.select).toHaveBeenCalledWith($el);
-      });
-
-      it('should prevent default if active selectale', function() {
-        var $el;
-
-        $el = $('<bah>');
-        spyOn(this.view, 'select').andReturn(true);
-        this.menu.getActiveSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
         expect(payload.preventDefault).toHaveBeenCalled();
-      });
-
-      it('should not select selectable if there is no active one', function() {
-        var $el;
-
-        $el = $('<bah>');
-        spyOn(this.view, 'select');
-
-        this.input.trigger(eventName, payload);
-
-        expect(this.view.select).not.toHaveBeenCalledWith($el);
-      });
-
-      it('should not prevent default if no active selectale', function() {
-        var $el;
-
-        $el = $('<bah>');
-        spyOn(this.view, 'select');
-
-        this.input.trigger(eventName, payload);
-
-        expect(payload.preventDefault).not.toHaveBeenCalled();
-      });
-
-      it('should not prevent default if selection of active selectable fails', function() {
-        var $el;
-
-        $el = $('<bah>');
-        spyOn(this.view, 'select').andReturn(false);
-        this.menu.getActiveSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
-        expect(payload.preventDefault).not.toHaveBeenCalled();
-      });
-
-      it('should autocomplete to top suggestion', function() {
-        var $el;
-
-        $el = $('<foo>');
-        spyOn(this.view, 'autocomplete');
-        this.menu.getTopSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
-        expect(this.view.autocomplete).toHaveBeenCalledWith($el);
-      });
-
-      it('should prevent default behavior of DOM event if autocompletion succeeds', function() {
-        var $el;
-
-        $el = $('<foo>');
-        spyOn(this.view, 'autocomplete').andReturn(true);
-        this.menu.getTopSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
-        expect(payload.preventDefault).toHaveBeenCalled();
-      });
-
-      it('should not prevent default behavior of DOM event if autocompletion fails', function() {
-        var $el;
-
-        $el = $('<foo>');
-        spyOn(this.view, 'autocomplete').andReturn(false);
-        this.menu.getTopSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
-        expect(payload.preventDefault).not.toHaveBeenCalled();
+        expect(payload.stopImmediatePropagation).toHaveBeenCalled();
       });
     });
   });
 
-  describe('on escKeyed', function() {
+  describe('on close', function() {
     var eventName, payload;
 
     beforeEach(function() {
-      eventName = 'escKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault']);
+      eventName = 'close';
+      payload = jasmine.createSpyObj('event', ['preventDefault', 'stopImmediatePropagation']);
     });
 
     describe('when idle', function() {
@@ -528,9 +430,9 @@ describe('Typeahead', function() {
       });
 
       it('should do nothing', function() {
-        spyOn(this.view, '_onEscKeyed');
+        spyOn(this.view, '_onClose');
         this.input.trigger(eventName, payload);
-        expect(this.view._onEscKeyed).not.toHaveBeenCalled();
+        expect(this.view._onClose).not.toHaveBeenCalled();
       });
     });
 
@@ -544,15 +446,22 @@ describe('Typeahead', function() {
         this.input.trigger(eventName, payload);
         expect(this.view.close).toHaveBeenCalled();
       });
+
+      it('should prevent default and stop immediate propagation', function() {
+        spyOn(this.view, 'close');
+        this.input.trigger(eventName, payload);
+        expect(payload.preventDefault).toHaveBeenCalled();
+        expect(payload.stopImmediatePropagation).toHaveBeenCalled();
+      });
     });
   });
 
-  describe('on upKeyed', function() {
+  describe('on moveUp', function() {
     var eventName, payload;
 
     beforeEach(function() {
-      eventName = 'upKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault']);
+      eventName = 'moveUp';
+      payload = jasmine.createSpyObj('event', ['preventDefault', 'stopImmediatePropagation']);
     });
 
     describe('when idle', function() {
@@ -561,9 +470,9 @@ describe('Typeahead', function() {
       });
 
       it('should do nothing', function() {
-        spyOn(this.view, '_onUpKeyed');
+        spyOn(this.view, '_onMoveUp');
         this.input.trigger(eventName, payload);
-        expect(this.view._onUpKeyed).not.toHaveBeenCalled();
+        expect(this.view._onMoveUp).not.toHaveBeenCalled();
       });
     });
 
@@ -571,26 +480,27 @@ describe('Typeahead', function() {
       beforeEach(function() {
         this.view.activate();
         spyOn(this.view, 'moveCursor');
-      });
-
-      it('should open menu', function() {
-        this.input.trigger(eventName, payload);
-        expect(this.menu.open).toHaveBeenCalled();
       });
 
       it('should move cursor -1', function() {
         this.input.trigger(eventName, payload);
         expect(this.view.moveCursor).toHaveBeenCalledWith(-1);
       });
+
+      it('should prevent default and stop immediate propagation', function() {
+        this.input.trigger(eventName, payload);
+        expect(payload.preventDefault).toHaveBeenCalled();
+        expect(payload.stopImmediatePropagation).toHaveBeenCalled();
+      });
     });
   });
 
-  describe('on downKeyed', function() {
+  describe('on moveDown', function() {
     var eventName, payload;
 
     beforeEach(function() {
-      eventName = 'downKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault']);
+      eventName = 'moveDown';
+      payload = jasmine.createSpyObj('event', ['preventDefault', 'stopImmediatePropagation']);
     });
 
     describe('when idle', function() {
@@ -599,9 +509,9 @@ describe('Typeahead', function() {
       });
 
       it('should do nothing', function() {
-        spyOn(this.view, '_onDownKeyed');
+        spyOn(this.view, '_onMoveDown');
         this.input.trigger(eventName, payload);
-        expect(this.view._onDownKeyed).not.toHaveBeenCalled();
+        expect(this.view._onMoveDown).not.toHaveBeenCalled();
       });
     });
 
@@ -611,122 +521,15 @@ describe('Typeahead', function() {
         spyOn(this.view, 'moveCursor');
       });
 
-      it('should open menu', function() {
-        this.input.trigger(eventName, payload);
-        expect(this.menu.open).toHaveBeenCalled();
-      });
-
       it('should move cursor +1', function() {
         this.input.trigger(eventName, payload);
         expect(this.view.moveCursor).toHaveBeenCalledWith(1);
       });
-    });
-  });
 
-  describe('on leftKeyed', function() {
-    var eventName, payload;
-
-    beforeEach(function() {
-      eventName = 'leftKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault']);
-    });
-
-    describe('when idle', function() {
-      beforeEach(function() {
-        this.view.deactivate();
-      });
-
-      it('should do nothing', function() {
-        spyOn(this.view, '_onLeftKeyed');
+      it('should prevent default and stop immediate propagation', function() {
         this.input.trigger(eventName, payload);
-        expect(this.view._onLeftKeyed).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when active and menu is closed', function() {
-      beforeEach(function() {
-        this.view.activate();
-        this.menu.isOpen.andReturn(false);
-      });
-
-      it('should do nothing', function() {
-        spyOn(this.view, '_onLeftKeyed');
-        this.input.trigger(eventName, payload);
-        expect(this.view._onLeftKeyed).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when active and menu is open', function() {
-      beforeEach(function() {
-        this.view.activate();
-        this.menu.isOpen.andReturn(true);
-      });
-
-      it('should autocomplete if language is rtl and text cursor is at end', function() {
-        var $el = $('<foo>');
-
-        spyOn(this.view, 'autocomplete');
-        this.view.dir = 'rtl';
-        this.input.isCursorAtEnd.andReturn(true);
-        this.menu.getTopSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
-        expect(this.view.autocomplete).toHaveBeenCalledWith($el);
-      });
-    });
-  });
-
-  describe('on rightKeyed', function() {
-    var eventName, payload;
-
-    beforeEach(function() {
-      eventName = 'rightKeyed';
-      payload = jasmine.createSpyObj('event', ['preventDefault']);
-    });
-
-    describe('when idle', function() {
-      beforeEach(function() {
-        this.view.deactivate();
-      });
-
-      it('should do nothing', function() {
-        spyOn(this.view, '_onRightKeyed');
-        this.input.trigger(eventName, payload);
-        expect(this.view._onRightKeyed).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when active and menu is closed', function() {
-      beforeEach(function() {
-        this.view.activate();
-        this.menu.isOpen.andReturn(false);
-      });
-
-      it('should do nothing', function() {
-        spyOn(this.view, '_onRightKeyed');
-        this.input.trigger(eventName, payload);
-        expect(this.view._onRightKeyed).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when active and menu is open', function() {
-      beforeEach(function() {
-        this.view.activate();
-        this.menu.isOpen.andReturn(true);
-      });
-
-      it('should autocomplete if language is rtl and text cursor is at end', function() {
-        var $el = $('<foo>');
-
-        spyOn(this.view, 'autocomplete');
-        this.view.dir = 'ltr';
-        this.input.isCursorAtEnd.andReturn(true);
-        this.menu.getTopSelectable.andReturn($el);
-
-        this.input.trigger(eventName, payload);
-
-        expect(this.view.autocomplete).toHaveBeenCalledWith($el);
+        expect(payload.preventDefault).toHaveBeenCalled();
+        expect(payload.stopImmediatePropagation).toHaveBeenCalled();
       });
     });
   });
@@ -1177,9 +980,6 @@ describe('Typeahead', function() {
       expect(this.input.setQuery).toHaveBeenCalledWith('woah');
     });
   });
-
-
-
 
 
   describe('#select', function() {

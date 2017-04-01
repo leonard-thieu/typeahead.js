@@ -7,18 +7,6 @@
 var Input = (function() {
   'use strict';
 
-  var specialKeyCodeMap;
-
-  specialKeyCodeMap = {
-    9: 'tab',
-    27: 'esc',
-    37: 'left',
-    39: 'right',
-    13: 'enter',
-    38: 'up',
-    40: 'down'
-  };
-
   // constructor
   // -----------
 
@@ -96,11 +84,36 @@ var Input = (function() {
 
     _onKeydown: function onKeydown($e) {
       // which is normalized and consistent (but not for ie)
-      var keyName = specialKeyCodeMap[$e.which || $e.keyCode];
+      var key = $e.which || $e.keyCode;
+      var action;
 
-      this._managePreventDefault(keyName, $e);
-      if (keyName && this._shouldTrigger(keyName, $e)) {
-        this.trigger(keyName + 'Keyed', $e);
+      switch (key) {
+        case 9:
+          action = !$e.shiftKey ? 'moveDown' : 'moveUp';
+          break;
+        case 13:
+          action = 'select';
+          break;
+        case 27:
+          action = 'close';
+          break;
+        case 32:
+          if ($e.ctrlKey) {
+            action = 'open';
+          }
+          break;
+        case 38:
+          action = 'moveUp';
+          break;
+        case 40:
+          action = 'moveDown';
+          break;
+        default:
+          break;
+      }
+
+      if (action) {
+        this.trigger(action, $e);
       }
     },
 
@@ -111,37 +124,6 @@ var Input = (function() {
     },
 
     // ### private
-
-    _managePreventDefault: function managePreventDefault(keyName, $e) {
-      var preventDefault;
-
-      switch (keyName) {
-        case 'up':
-        case 'down':
-          preventDefault = !withModifier($e);
-          break;
-
-        default:
-          preventDefault = false;
-      }
-
-      preventDefault && $e.preventDefault();
-    },
-
-    _shouldTrigger: function shouldTrigger(keyName, $e) {
-      var trigger;
-
-      switch (keyName) {
-        case 'tab':
-          trigger = !withModifier($e);
-          break;
-
-        default:
-          trigger = true;
-      }
-
-      return trigger;
-    },
 
     _checkLanguageDirection: function checkLanguageDirection() {
       var dir = (this.$input.css('direction') || 'ltr').toLowerCase();
@@ -178,7 +160,7 @@ var Input = (function() {
     // ### public
 
     bind: function() {
-      var that = this, onBlur, onFocus, onKeydown, onInput;
+      var onBlur, onFocus, onKeydown, onInput;
 
       // bound functions
       onBlur = _.bind(this._onBlur, this);
@@ -191,22 +173,7 @@ var Input = (function() {
       .on('focus.tt', onFocus)
       .on('keydown.tt', onKeydown);
 
-      // ie8 don't support the input event
-      // ie9 doesn't fire the input event when characters are removed
-      if (!_.isMsie() || _.isMsie() > 9) {
-        this.$input.on('input.tt', onInput);
-      }
-
-      else {
-        this.$input.on('keydown.tt keypress.tt cut.tt paste.tt', function($e) {
-          // if a special key triggered this, ignore it
-          if (specialKeyCodeMap[$e.which || $e.keyCode]) { return; }
-
-          // give the browser a chance to update the value of the input
-          // before checking to see if the query changed
-          _.defer(_.bind(that._onInput, that, $e));
-        });
-      }
+      this.$input.on('input.tt', onInput);
 
       return this;
     },
@@ -348,9 +315,5 @@ var Input = (function() {
 
   function areQueriesEquivalent(a, b) {
     return Input.normalizeQuery(a) === Input.normalizeQuery(b);
-  }
-
-  function withModifier($e) {
-    return $e.altKey || $e.ctrlKey || $e.metaKey || $e.shiftKey;
   }
 })();
