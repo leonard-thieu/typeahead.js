@@ -73,6 +73,27 @@ describe('Input', function() {
   });
 
   describe('when the keydown DOM event is triggered by tab', function() {
+    it('should trigger open', function() {
+      var spy;
+
+      this.view.onSync('open', spy = jasmine.createSpy());
+      simulateKeyEvent(this.$input, 'keydown', KEYS.tab);
+
+      expect(spy).toHaveBeenCalled();
+    });
+
+    xit('should not trigger another event if immediate propagation is stopped', function() {
+      var spy;
+
+      this.view.onSync('open', function($e) {
+        $e.stopImmediatePropagation();
+      });
+      this.view.onSync('moveDown moveUp', spy = jasmine.createSpy());
+      simulateKeyEvent(this.$input, 'keydown', KEYS.tab);
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('should trigger moveDown if no modifiers were pressed', function() {
       var spy;
 

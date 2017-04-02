@@ -80,21 +80,23 @@ var Menu = (function() {
     },
 
     _ensureVisible: function ensureVisible($el) {
-      var elTop, elBottom, nodeScrollTop, nodeHeight;
-      
-      elTop = $el.position().top;
-      elBottom = elTop + $el.outerHeight(true);
-      nodeScrollTop = this.$node.scrollTop();
-      nodeHeight = this.$node.height() +
-          parseInt(this.$node.css('paddingTop'), 10) +
-          parseInt(this.$node.css('paddingBottom'), 10);
+      var position, elTop, elBottom, nodeScrollTop, nodeHeight;
 
-      if (elTop < 0) {
-        this.$node.scrollTop(nodeScrollTop + elTop);
-      }
+      if (position = $el.position()) {
+        elTop = position.top;
+        elBottom = elTop + $el.outerHeight(true);
+        nodeScrollTop = this.$node.scrollTop();
+        nodeHeight = this.$node.height() +
+            parseInt(this.$node.css('paddingTop'), 10) +
+            parseInt(this.$node.css('paddingBottom'), 10);
 
-      else if (nodeHeight < elBottom) {
-        this.$node.scrollTop(nodeScrollTop + (elBottom - nodeHeight));
+        if (elTop < 0) {
+          this.$node.scrollTop(nodeScrollTop + elTop);
+        }
+
+        else if (nodeHeight < elBottom) {
+          this.$node.scrollTop(nodeScrollTop + (elBottom - nodeHeight));
+        }
       }
     },
 

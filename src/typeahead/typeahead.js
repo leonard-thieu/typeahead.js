@@ -163,8 +163,7 @@ var Typeahead = (function() {
     },
 
     _onOpen: function onOpen(type, $e) {
-      if (this.isActive()) {
-        this.menu.update(this.input.getQuery());
+      if (this.isActive() && !this.isOpen()) {
         this.open();
         $e.preventDefault();
         $e.stopImmediatePropagation();
@@ -325,6 +324,7 @@ var Typeahead = (function() {
 
     open: function open() {
       if (!this.isOpen() && !this.eventBus.before('open')) {
+        this.menu.update(this.input.getQuery());
         this.menu.open();
         this.moveCursor(0);
         this._updateHint();

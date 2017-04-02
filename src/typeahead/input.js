@@ -115,6 +115,7 @@ var Input = (function() {
 
       for (var i = 0; i < actions.length; i++) {
         this.trigger(actions[i], $e);
+        if ($e.isImmediatePropagationStopped()) { break; }
       }
     },
 

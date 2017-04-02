@@ -252,7 +252,7 @@ describe('Menu', function() {
 
   describe('#getSelectableData', function() {
     it('should extract the data from the selectable element', function() {
-      var $selectable, datum;
+      var $selectable, data;
 
       $selectable = $('<div>').data({
         'tt-selectable-dataset': 'foo',

@@ -386,9 +386,10 @@ describe('Typeahead', function() {
       });
     });
 
-    describe('when active', function() {
+    describe('when active and not open', function() {
       beforeEach(function() {
         this.view.activate();
+        this.view.close();
       });
 
       it('should open', function() {
@@ -398,7 +399,6 @@ describe('Typeahead', function() {
       });
 
       it('should prevent default and stop immediate propagation', function() {
-        spyOn(this.view, 'open');
         this.input.trigger(eventName, payload);
         expect(payload.preventDefault).toHaveBeenCalled();
         expect(payload.stopImmediatePropagation).toHaveBeenCalled();
@@ -863,10 +863,23 @@ describe('Typeahead', function() {
         expect(spy2).not.toHaveBeenCalled();
       });
 
+      it('should update menu', function() {
+        this.view.open();
+        expect(this.menu.update).toHaveBeenCalled();
+      });
+
       it('should open menu', function() {
         this.view.open();
         expect(this.menu.open).toHaveBeenCalled();
       });
+
+      it('should select first selectable', function() {
+        var spy = spyOn(this.view, 'moveCursor');
+
+        this.view.open();
+
+        expect(spy).toHaveBeenCalledWith(0);
+      })
 
       it('should update hint if active', function() {
         spyOn(this.view, 'isActive').andReturn(true);
