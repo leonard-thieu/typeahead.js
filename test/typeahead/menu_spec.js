@@ -137,7 +137,7 @@ describe('Menu', function() {
     });
   });
 
-  describe('when asyncReceieved is triggered on a dataset', function() {
+  describe('when asyncReceived is triggered on a dataset', function() {
     it('should propagate event', function() {
       var spy = jasmine.createSpy();
 
@@ -224,15 +224,6 @@ describe('Menu', function() {
       $actual = this.view.selectableRelativeToCursor(-1);
 
       expect($actual).toBe($expected);
-    });
-
-    it('should return null if delta lands on input', function() {
-      var $first;
-
-      $first = this.view._getSelectables().eq(0);
-
-      this.view.setCursor($first);
-      expect(this.view.selectableRelativeToCursor(-1)).toBeNull();
     });
   });
 

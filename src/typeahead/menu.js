@@ -81,7 +81,7 @@ var Menu = (function() {
 
     _ensureVisible: function ensureVisible($el) {
       var elTop, elBottom, nodeScrollTop, nodeHeight;
-
+      
       elTop = $el.position().top;
       elBottom = elTop + $el.outerHeight(true);
       nodeScrollTop = this.$node.scrollTop();
@@ -145,15 +145,16 @@ var Menu = (function() {
       $oldCursor = this.getActiveSelectable();
       $selectables = this._getSelectables();
 
-      // shifting before and after modulo to deal with -1 index
-      oldIndex = $oldCursor ? $selectables.index($oldCursor) : -1;
+      oldIndex = $selectables.index($oldCursor);
       newIndex = oldIndex + delta;
-      newIndex = (newIndex + 1) % ($selectables.length + 1) - 1;
 
-      // wrap new index if less than -1
-      newIndex = newIndex < -1 ? $selectables.length - 1 : newIndex;
+      // wrap new index if greater than length
+      newIndex = newIndex % $selectables.length;
 
-      return newIndex === -1 ? null : $selectables.eq(newIndex);
+      // wrap new index if less than 0
+      newIndex = newIndex < 0 ? $selectables.length - 1 : newIndex;
+
+      return $selectables.eq(newIndex);
     },
 
     setCursor: function setCursor($selectable) {

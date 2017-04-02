@@ -61,11 +61,13 @@ describe('$plugin', function() {
     this.$input.typeahead('close');
     expect(this.$input.typeahead('isOpen')).toBe(false);
 
+    this.$input.typeahead('val', 'o');
     this.$input.typeahead('open');
     expect(this.$input.typeahead('isOpen')).toBe(true);
   });
 
   it('#close should close the menu', function() {
+    this.$input.typeahead('val', 'o');
     this.$input.typeahead('open');
     expect(this.$input.typeahead('isOpen')).toBe(true);
 
@@ -78,8 +80,8 @@ describe('$plugin', function() {
 
     // activate and set val to render some selectables
     this.$input.typeahead('activate');
-    this.$input.typeahead('open');
     this.$input.typeahead('val', 'o');
+    this.$input.typeahead('open');
     $el = $('.tt-selectable').first();
 
     expect(this.$input.typeahead('select', $el)).toBe(true);
@@ -102,8 +104,8 @@ describe('$plugin', function() {
 
     // activate and set val to render some selectables
     this.$input.typeahead('activate');
-    this.$input.typeahead('open');
     this.$input.typeahead('val', 'o');
+    this.$input.typeahead('open');
     $el = $('.tt-selectable').first();
 
     expect(this.$input.typeahead('autocomplete', $el)).toBe(true);
@@ -126,9 +128,9 @@ describe('$plugin', function() {
 
     // activate and set val to render some selectables
     this.$input.typeahead('activate');
-    this.$input.typeahead('open');
     this.$input.typeahead('val', 'o');
-    $el = $('.tt-selectable').first();
+    this.$input.typeahead('open');
+    $el = $('.tt-selectable').eq(1);
 
     expect($el).not.toHaveClass('tt-cursor');
     expect(this.$input.typeahead('moveCursor', 1)).toBe(true);

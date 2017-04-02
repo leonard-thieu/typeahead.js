@@ -326,6 +326,7 @@ var Typeahead = (function() {
     open: function open() {
       if (!this.isOpen() && !this.eventBus.before('open')) {
         this.menu.open();
+        this.moveCursor(0);
         this._updateHint();
         this.eventBus.trigger('open');
       }
