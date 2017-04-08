@@ -220,7 +220,7 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      dist: 'dist'
+      dist: ['dist', 'dist_temp']
     },
 
     connect: {
