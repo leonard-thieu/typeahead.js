@@ -406,17 +406,6 @@ var Typeahead = (function() {
       if (!cancelMove && !this.eventBus.before('cursorchange', suggestion, datasetName)) {
         this.menu.setCursor($candidate);
 
-        // cursor moved to different selectable
-        if (data) {
-          this.input.setInputValue(data.val);
-        }
-
-        // cursor moved off of selectables, back to input
-        else {
-          this.input.resetInputValue();
-          this._updateHint();
-        }
-
         this.eventBus.trigger('cursorchange', suggestion, datasetName);
 
         // return true if move succeeded
