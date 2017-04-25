@@ -57,12 +57,12 @@
         // only apply inline styles and make dom changes if necessary
         if (defaultHint || defaultMenu) {
           $wrapper.css(www.css.wrapper);
-          $input.css(defaultHint ? www.css.input : www.css.inputWithNoHint);
+          $input.css(o.hint !== false ? www.css.input : www.css.inputWithNoHint);
 
           $input
           .wrap($wrapper)
           .parent()
-          .prepend(defaultHint ? $hint : null)
+          .prepend(o.hint !== false ? $hint : null)
           .append(defaultMenu ? $menu : null);
         }
 
