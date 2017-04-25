@@ -93,7 +93,7 @@
     },
 
     isEnabled: function isEnabled() {
-      var enabled;
+      var enabled = false;
 
       ttEach(this.first(), function(t) { enabled = t.isEnabled(); });
       return enabled;
@@ -110,7 +110,7 @@
     },
 
     isActive: function isActive() {
-      var active;
+      var active = false;
 
       ttEach(this.first(), function(t) { active = t.isActive(); });
       return active;
@@ -127,7 +127,7 @@
     },
 
     isOpen: function isOpen() {
-      var open;
+      var open = false;
 
       ttEach(this.first(), function(t) { open = t.isOpen(); });
       return open;
@@ -167,7 +167,7 @@
     // mirror jQuery#val functionality: reads operate on first match,
     // write operates on all matches
     val: function val(newVal) {
-      var query;
+      var query = false;
 
       if (!arguments.length) {
         ttEach(this.first(), function(t) { query = t.getVal(); });
