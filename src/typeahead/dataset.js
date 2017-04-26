@@ -4,6 +4,11 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @class {Dataset}
+ * @mixes {Build}
+ * @mixes {EventEmitter}
+ */
 var Dataset = (function() {
   'use strict';
 
@@ -17,8 +22,7 @@ var Dataset = (function() {
 
   nameGenerator = _.getIdGenerator();
 
-  // constructor
-  // -----------
+  // region constructor
 
   function Dataset(o, www) {
     o = o || {};
@@ -64,8 +68,9 @@ var Dataset = (function() {
     .addClass(this.classes.dataset + '-' + this.name);
   }
 
-  // static methods
-  // --------------
+  // endregion
+
+  // region static methods
 
   Dataset.extractData = function extractData(el) {
     var $el = $(el);
@@ -81,12 +86,16 @@ var Dataset = (function() {
     return null;
   };
 
-  // instance methods
-  // ----------------
+  // endregion
 
+  // region instance methods
+
+  /**
+   * @mixin {Dataset.prototype}
+   */
   _.mixin(Dataset.prototype, EventEmitter, {
 
-    // ### private
+    // region ### private
 
     _overwrite: function overwrite(query, suggestions) {
       suggestions = suggestions || [];
@@ -211,20 +220,20 @@ var Dataset = (function() {
 
     _getFooter: function getFooter(query, suggestions) {
       return this.templates.footer ?
-          this.templates.footer({
-            query: query,
-            suggestions: suggestions,
-            dataset: this.name
-          }) : null;
+        this.templates.footer({
+          query: query,
+          suggestions: suggestions,
+          dataset: this.name
+        }) : null;
     },
 
     _getHeader: function getHeader(query, suggestions) {
       return this.templates.header ?
-          this.templates.header({
-            query: query,
-            suggestions: suggestions,
-            dataset: this.name
-          }) : null;
+        this.templates.header({
+          query: query,
+          suggestions: suggestions,
+          dataset: this.name
+        }) : null;
     },
 
     _resetLastSuggestion: function resetLastSuggestion() {
@@ -235,7 +244,9 @@ var Dataset = (function() {
       return _.isObject(obj) ? _.mixin({ _query: query }, obj) : obj;
     },
 
-    // ### public
+    // endregion
+
+    // region ### public
 
     update: function update(query) {
       var that = this, canceled = false, syncCalled = false, rendered = 0;
@@ -298,12 +309,15 @@ var Dataset = (function() {
       // #970
       this.$el = $('<div>');
     }
+
+    // endregion
   });
+
+  // endregion
 
   return Dataset;
 
-  // helper functions
-  // ----------------
+  // region helper functions
 
   function getDisplayFn(display) {
     display = display || _.stringify;
@@ -331,4 +345,6 @@ var Dataset = (function() {
     // dashes, underscores, letters, and numbers
     return (/^[_a-zA-Z0-9-]+$/).test(str);
   }
+
+  // endregion
 })();

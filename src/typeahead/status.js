@@ -28,6 +28,9 @@ var Status = (function() {
     }, this));
   }
 
+  /**
+   * @mixin {Status.prototype}
+   */
   _.mixin(Status.prototype, {
     update: function update(event, suggestions) {
       var length = suggestions.length;

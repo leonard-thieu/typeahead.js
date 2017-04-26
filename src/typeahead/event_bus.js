@@ -22,8 +22,7 @@ var EventBus = (function() {
     autocomplete: 'autocompleted'
   };
 
-  // constructor
-  // -----------
+  // region constructor
 
   function EventBus(o) {
     if (!o || !o.el) {
@@ -33,9 +32,13 @@ var EventBus = (function() {
     this.$el = $(o.el);
   }
 
-  // instance methods
-  // ----------------
+  // endregion
 
+  // region instance methods
+
+  /**
+   * @mixin {EventBus.prototype}
+   */
   _.mixin(EventBus.prototype, {
 
     // ### private
@@ -70,6 +73,8 @@ var EventBus = (function() {
       }
     }
   });
+
+  // endregion
 
   return EventBus;
 })();

@@ -4,11 +4,14 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @mixes {EventEmitter}
+ * @mixes {Build}
+ */
 var Menu = (function() {
   'use strict';
 
-  // constructor
-  // -----------
+  // region constructor
 
   function Menu(o, www) {
     var that = this;
@@ -35,11 +38,14 @@ var Menu = (function() {
     }
   }
 
-  // instance methods
-  // ----------------
+  // endregion
 
+  // region instance methods
+
+  /**
+   * @mixin {Menu.prototype}
+   */
   _.mixin(Menu.prototype, EventEmitter, {
-
     // ### event handlers
 
     _onSelectableClick: function onSelectableClick($e) {
@@ -57,6 +63,7 @@ var Menu = (function() {
     },
 
     _propagate: function propagate() {
+      //noinspection JSCheckFunctionSignatures
       this.trigger.apply(this, arguments);
     },
 
@@ -87,8 +94,8 @@ var Menu = (function() {
         elBottom = elTop + $el.outerHeight(true);
         nodeScrollTop = this.$node.scrollTop();
         nodeHeight = this.$node.height() +
-            parseInt(this.$node.css('paddingTop'), 10) +
-            parseInt(this.$node.css('paddingBottom'), 10);
+          parseInt(this.$node.css('paddingTop'), 10) +
+          parseInt(this.$node.css('paddingBottom'), 10);
 
         if (elTop < 0) {
           this.$node.scrollTop(nodeScrollTop + elTop);
@@ -221,6 +228,8 @@ var Menu = (function() {
       function destroyDataset(dataset) { dataset.destroy(); }
     }
   });
+
+  // endregion
 
   return Menu;
 })();

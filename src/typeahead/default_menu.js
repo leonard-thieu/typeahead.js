@@ -4,6 +4,9 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @extends {Menu}
+ */
 var DefaultMenu = (function() {
   'use strict';
 
@@ -13,9 +16,11 @@ var DefaultMenu = (function() {
     Menu.apply(this, [].slice.call(arguments, 0));
   }
 
+  /**
+   * @mixin {DefaultMenu.prototype}
+   */
   _.mixin(DefaultMenu.prototype, Menu.prototype, {
-    // overrides
-    // ---------
+    // region overrides
 
     open: function open() {
       // only display the menu when there's something to be shown
@@ -57,8 +62,9 @@ var DefaultMenu = (function() {
       return s.setLanguageDirection.apply(this, [].slice.call(arguments, 0));
     },
 
-    // private
-    // ---------
+    // endregion
+
+    // region private
 
     _hide: function hide() {
       this.$node.hide();
@@ -69,6 +75,8 @@ var DefaultMenu = (function() {
       // display: block; not display: inline;
       this.$node.css('display', 'block');
     }
+
+    // endregion
   });
 
   return DefaultMenu;

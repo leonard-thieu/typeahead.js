@@ -75,6 +75,7 @@
           datasets: datasets
         }, www);
 
+        //noinspection JSUnusedAssignment
         status = new Status({
           $input: $input,
           menu: menu
@@ -197,6 +198,7 @@
     }
 
     else {
+      //noinspection JSCheckFunctionSignatures
       return methods.initialize.apply(this, arguments);
     }
   };
@@ -206,8 +208,7 @@
     return this;
   };
 
-  // helper methods
-  // --------------
+  // region helper methods
 
   function ttEach($els, fn) {
     $els.each(function() {
@@ -293,4 +294,6 @@
 
     return $el.length ? $el : null;
   }
+
+  // endregion
 })();

@@ -7,8 +7,7 @@
 var Typeahead = (function() {
   'use strict';
 
-  // constructor
-  // -----------
+  // region constructor
 
   function Typeahead(o, www) {
     o = o || {};
@@ -65,9 +64,13 @@ var Typeahead = (function() {
     .onSync('langDirChanged', this._onLangDirChanged, this);
   }
 
-  // instance methods
-  // ----------------
+  // endregion
 
+  // region instance methods
+
+  /**
+   * @mixin {Typeahead.prototype}
+   */
   _.mixin(Typeahead.prototype, {
 
     // here's where hacks get applied and we don't feel bad about it
@@ -422,6 +425,8 @@ var Typeahead = (function() {
 
     // endregion
   });
+
+  // endregion
 
   return Typeahead;
 })();

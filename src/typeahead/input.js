@@ -4,11 +4,15 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @class {Input}
+ * @mixes {EventEmitter}
+ * @mixes {Build}
+ */
 var Input = (function() {
   'use strict';
 
-  // constructor
-  // -----------
+  // region constructor
 
   function Input(o, www) {
     o = o || {};
@@ -48,29 +52,32 @@ var Input = (function() {
     // if no hint, noop all the hint related functions
     if (this.$hint.length === 0) {
       this.setHint =
-          this.getHint =
-              this.clearHint =
-                  this.clearHintIfInvalid = _.noop;
+        this.getHint =
+          this.clearHint =
+            this.clearHintIfInvalid = _.noop;
     }
 
     this.onSync('cursorchange', this._updateDescendent);
-
   }
 
-  // static methods
-  // --------------
+  // endregion
+
+  // region static methods
 
   Input.normalizeQuery = function(str) {
     // strips leading whitespace and condenses all whitespace
     return (_.toStr(str)).replace(/^\s*/g, '').replace(/\s{2,}/g, ' ');
   };
 
-  // instance methods
-  // ----------------
+  // endregion
 
+  // region instance methods
+
+  /**
+   * @mixin {Input.prototype}
+   */
   _.mixin(Input.prototype, EventEmitter, {
-
-    // ### event handlers
+    // region ### event handlers
 
     _onBlur: function onBlur() {
       this.resetInputValue();
@@ -125,7 +132,9 @@ var Input = (function() {
       this._checkLanguageDirection();
     },
 
-    // ### private
+    // endregion
+
+    // region ### private
 
     _checkLanguageDirection: function checkLanguageDirection() {
       var dir = (this.$input.css('direction') || 'ltr').toLowerCase();
@@ -142,7 +151,7 @@ var Input = (function() {
 
       areEquivalent = areQueriesEquivalent(val, this.query);
       hasDifferentWhitespace = areEquivalent ?
-          this.query.length !== val.length : false;
+        this.query.length !== val.length : false;
 
       this.query = val;
 
@@ -159,9 +168,11 @@ var Input = (function() {
       this.$input.attr('aria-activedescendant', id);
     },
 
-    // ### public
+    // endregion
 
-    bind: function() {
+    // region ### public
+
+    bind: function bind() {
       var onBlur, onFocus, onKeydown, onInput;
 
       // bound functions
@@ -205,6 +216,8 @@ var Input = (function() {
       return this.query !== this.queryWhenFocused;
     },
 
+    // region Input
+
     getInputValue: function getInputValue() {
       return this.$input.val();
     },
@@ -217,6 +230,10 @@ var Input = (function() {
     resetInputValue: function resetInputValue() {
       this.setInputValue(this.query);
     },
+
+    // endregion
+
+    // region Hint
 
     getHint: function getHint() {
       return this.$hint.val();
@@ -241,6 +258,8 @@ var Input = (function() {
       !isValid && this.clearHint();
     },
 
+    // endregion
+
     hasFocus: function hasFocus() {
       return this.$input.is(':focus');
     },
@@ -254,10 +273,11 @@ var Input = (function() {
       return this.$overflowHelper.width() >= constraint;
     },
 
-    isCursorAtEnd: function() {
+    isCursorAtEnd: function isCursorAtEnd() {
       var valueLength, selectionStart, range;
 
       valueLength = this.$input.val().length;
+      //noinspection JSUnresolvedVariable
       selectionStart = this.$input[0].selectionStart;
 
       if (_.isNumber(selectionStart)) {
@@ -284,12 +304,15 @@ var Input = (function() {
       // #970
       this.$hint = this.$input = this.$overflowHelper = $('<div>');
     }
+
+    // endregion
   });
+
+  // endregion
 
   return Input;
 
-  // helper functions
-  // ----------------
+  // region helper functions
 
   function buildOverflowHelper($input) {
     return $('<pre aria-hidden="true"></pre>')
@@ -317,4 +340,6 @@ var Input = (function() {
   function areQueriesEquivalent(a, b) {
     return Input.normalizeQuery(a) === Input.normalizeQuery(b);
   }
+
+  // endregion
 })();

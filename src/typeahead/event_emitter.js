@@ -6,6 +6,9 @@
 
 // inspired by https://github.com/jharding/boomerang
 
+/**
+ * @mixin
+ */
 var EventEmitter = (function() {
   'use strict';
 

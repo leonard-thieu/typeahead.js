@@ -4,6 +4,44 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @typedef {object} Build
+ * @property {object} css
+ * @property {object} html
+ * @property {Build.Classes} classes
+ * @property {object} selectors
+ * @property {Function} mixin
+ */
+
+/**
+ * @typedef {object} Build.Css
+ * @property {object} wrapper
+ * @property {object} hint
+ * @property {object} input
+ * @property {object} inputWithNoHint
+ * @property {object} menu
+ * @property {object} ltr
+ * @property {object} rtl
+ */
+
+/**
+ * @typedef {object} Build.Classes
+ * @property {string} wrapper
+ * @property {string} input
+ * @property {string} hint
+ * @property {string} menu
+ * @property {string} dataset
+ * @property {string} suggestion
+ * @property {string} selectable
+ * @property {string} empty
+ * @property {string} open
+ * @property {string} cursor
+ * @property {string} highlight
+ */
+
+/**
+ * @returns {Build}
+ */
 var WWW = (function() {
   'use strict';
 
@@ -23,6 +61,9 @@ var WWW = (function() {
 
   return build;
 
+  /**
+   * @returns {Build}
+   */
   function build(o) {
     var www, classes;
 
@@ -103,6 +144,7 @@ var WWW = (function() {
     if (_.isMsie()) {
       // ie6-8 (and 9?) doesn't fire hover and click events for elements with
       // transparent backgrounds, for a workaround, use 1x1 transparent gif
+      //noinspection SpellCheckingInspection
       _.mixin(css.input, {
         backgroundImage: 'url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)'
       });
