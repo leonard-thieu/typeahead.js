@@ -5,16 +5,16 @@
  */
 
 /**
- * @typedef {object} Build
- * @property {object} css
- * @property {object} html
- * @property {Build.Classes} classes
- * @property {object} selectors
+ * @typedef {object} WWW.Build
+ * @property {WWW.Build.Css} css
+ * @property {WWW.Build.Html} html
+ * @property {WWW.Build.Classes} classes
+ * @property {WWW.Build.Classes} selectors
  * @property {Function} mixin
  */
 
 /**
- * @typedef {object} Build.Css
+ * @typedef {object} WWW.Build.Css
  * @property {object} wrapper
  * @property {object} hint
  * @property {object} input
@@ -25,7 +25,13 @@
  */
 
 /**
- * @typedef {object} Build.Classes
+ * @typedef {object} WWW.Build.Html
+ * @property {string} wrapper
+ * @property {string} menu
+ */
+
+/**
+ * @typedef {object} WWW.Build.Classes
  * @property {string} wrapper
  * @property {string} input
  * @property {string} hint
@@ -39,9 +45,6 @@
  * @property {string} highlight
  */
 
-/**
- * @returns {Build}
- */
 var WWW = (function() {
   'use strict';
 
@@ -61,9 +64,6 @@ var WWW = (function() {
 
   return build;
 
-  /**
-   * @returns {Build}
-   */
   function build(o) {
     var www, classes;
 

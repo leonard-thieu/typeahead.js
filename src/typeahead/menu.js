@@ -6,7 +6,7 @@
 
 /**
  * @mixes {EventEmitter}
- * @mixes {Build}
+ * @mixes {WWW.Build}
  */
 var Menu = (function() {
   'use strict';

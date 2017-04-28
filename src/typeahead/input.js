@@ -7,7 +7,7 @@
 /**
  * @class {Input}
  * @mixes {EventEmitter}
- * @mixes {Build}
+ * @mixes {WWW.Build}
  */
 var Input = (function() {
   'use strict';

@@ -6,7 +6,7 @@
 
 /**
  * @class {Dataset}
- * @mixes {Build}
+ * @mixes {WWW.Build}
  * @mixes {EventEmitter}
  */
 var Dataset = (function() {
