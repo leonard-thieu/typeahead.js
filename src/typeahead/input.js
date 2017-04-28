@@ -79,17 +79,16 @@ var Input = (function() {
   _.mixin(Input.prototype, EventEmitter, {
     // region ### event handlers
 
-    _onBlur: function onBlur() {
-      this.resetInputValue();
+    _onBlur: function _onBlur() {
       this.trigger('blurred');
     },
 
-    _onFocus: function onFocus() {
+    _onFocus: function _onFocus() {
       this.queryWhenFocused = this.query;
       this.trigger('focused');
     },
 
-    _onKeydown: function onKeydown($e) {
+    _onKeydown: function _onKeydown($e) {
       // which is normalized and consistent (but not for ie)
       var key = $e.which || $e.keyCode;
       var actions = [];
@@ -126,7 +125,7 @@ var Input = (function() {
       }
     },
 
-    _onInput: function onInput() {
+    _onInput: function _onInput() {
       this._setQuery(this.getInputValue());
       this.clearHintIfInvalid();
       this._checkLanguageDirection();
@@ -136,7 +135,7 @@ var Input = (function() {
 
     // region ### private
 
-    _checkLanguageDirection: function checkLanguageDirection() {
+    _checkLanguageDirection: function _checkLanguageDirection() {
       var dir = (this.$input.css('direction') || 'ltr').toLowerCase();
 
       if (this.dir !== dir) {
@@ -146,7 +145,7 @@ var Input = (function() {
       }
     },
 
-    _setQuery: function setQuery(val, silent) {
+    _setQuery: function _setQuery(val, silent) {
       var areEquivalent, hasDifferentWhitespace;
 
       areEquivalent = areQueriesEquivalent(val, this.query);
@@ -164,7 +163,7 @@ var Input = (function() {
       }
     },
 
-    _updateDescendent: function updateDescendent(event, id) {
+    _updateDescendent: function _updateDescendent(event, id) {
       this.$input.attr('aria-activedescendant', id);
     },
 
@@ -184,12 +183,15 @@ var Input = (function() {
       this.$input
       .on('blur.tt', onBlur)
       .on('focus.tt', onFocus)
-      .on('keydown.tt', onKeydown);
-
-      this.$input.on('input.tt', onInput);
+      .on('keydown.tt', onKeydown)
+      .on('input.tt', onInput);
 
       return this;
     },
+
+    // region Focus
+
+    // Used in hacks/tests
 
     focus: function focus() {
       this.$input.focus();
@@ -199,36 +201,33 @@ var Input = (function() {
       this.$input.blur();
     },
 
+    // endregion
+
     getLangDir: function getLangDir() {
       return this.dir;
     },
+
+    // region Query
 
     getQuery: function getQuery() {
       return this.query || '';
     },
 
     setQuery: function setQuery(val, silent) {
-      this.setInputValue(val);
       this._setQuery(val, silent);
     },
 
+    // Supports typeahead:change event
     hasQueryChangedSinceLastFocus: function hasQueryChangedSinceLastFocus() {
       return this.query !== this.queryWhenFocused;
     },
+
+    // endregion
 
     // region Input
 
     getInputValue: function getInputValue() {
       return this.$input.val();
-    },
-
-    setInputValue: function setInputValue(value) {
-      this.clearHintIfInvalid();
-      this._checkLanguageDirection();
-    },
-
-    resetInputValue: function resetInputValue() {
-      this.setInputValue(this.query);
     },
 
     // endregion
@@ -258,12 +257,6 @@ var Input = (function() {
       !isValid && this.clearHint();
     },
 
-    // endregion
-
-    hasFocus: function hasFocus() {
-      return this.$input.is(':focus');
-    },
-
     hasOverflow: function hasOverflow() {
       // 2 is arbitrary, just picking a small number to handle edge cases
       var constraint = this.$input.width() - 2;
@@ -273,27 +266,12 @@ var Input = (function() {
       return this.$overflowHelper.width() >= constraint;
     },
 
-    isCursorAtEnd: function isCursorAtEnd() {
-      var valueLength, selectionStart, range;
+    // endregion
 
-      valueLength = this.$input.val().length;
-      //noinspection JSUnresolvedVariable
-      selectionStart = this.$input[0].selectionStart;
-
-      if (_.isNumber(selectionStart)) {
-        return selectionStart === valueLength;
-      }
-
-      else if (document.selection) {
-        // NOTE: this won't work unless the input has focus, the good news
-        // is this code should only get called when the input has focus
-        range = document.selection.createRange();
-        range.moveStart('character', -valueLength);
-
-        return valueLength === range.text.length;
-      }
-
-      return true;
+    // Activation-related
+    // Supports typeahead:change event
+    hasFocus: function hasFocus() {
+      return this.$input.is(':focus');
     },
 
     destroy: function destroy() {

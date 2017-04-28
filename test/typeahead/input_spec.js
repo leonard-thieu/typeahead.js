@@ -34,15 +34,6 @@ describe('Input', function() {
   });
 
   describe('when the blur DOM event is triggered', function() {
-    it('should reset the input value', function() {
-      this.view.setQuery('wine');
-      this.view.setInputValue('cheese');
-
-      this.$input.blur();
-
-      expect(this.$input.val()).toBe('wine');
-    });
-
     it('should trigger blurred', function() {
       var spy;
 
@@ -82,10 +73,10 @@ describe('Input', function() {
       expect(spy).toHaveBeenCalled();
     });
 
-    xit('should not trigger another event if immediate propagation is stopped', function() {
+    it('should not trigger another event if immediate propagation is stopped', function() {
       var spy;
 
-      this.view.onSync('open', function($e) {
+      this.view.onSync('open', function(event, $e) {
         $e.stopImmediatePropagation();
       });
       this.view.onSync('moveDown moveUp', spy = jasmine.createSpy());
@@ -171,33 +162,12 @@ describe('Input', function() {
   // NOTE: have to treat these as async because the ie polyfill acts
   // in a async manner
   describe('when the input DOM event is triggered', function() {
-    it('should update query', function() {
-      this.view.setQuery('wine');
-      this.view.setInputValue('cheese');
-
-      simulateInputEvent(this.$input);
-
-      waitsFor(function() { return this.view.getQuery() === 'cheese'; });
-    });
-
     it('should trigger queryChanged if the query changed', function() {
       var spy;
 
       this.view.setQuery('wine');
-      this.view.setInputValue('cheese');
+      this.$input.val('cheese');
       this.view.onSync('queryChanged', spy = jasmine.createSpy());
-
-      simulateInputEvent(this.$input);
-
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should trigger whitespaceChanged if whitespace changed', function() {
-      var spy;
-
-      this.view.setQuery('wine  bar');
-      this.view.setInputValue('wine bar');
-      this.view.onSync('whitespaceChanged', spy = jasmine.createSpy());
 
       simulateInputEvent(this.$input);
 
@@ -273,11 +243,6 @@ describe('Input', function() {
       expect(this.view.getQuery()).toBe('mouse');
     });
 
-    it('should update input value', function() {
-      this.view.setQuery('mouse');
-      expect(this.view.getInputValue()).toBe('mouse');
-    });
-
     it('should trigger queryChanged if the query changed', function() {
       var spy;
 
@@ -327,46 +292,10 @@ describe('Input', function() {
     });
   });
 
-  describe('#setInputValue', function() {
-    it('should act as setter to the input value', function() {
-      this.view.setInputValue('cheese');
-      expect(this.view.getInputValue()).toBe('cheese');
-    });
-
-    it('should clear hint if invalid', function() {
-      spyOn(this.view, 'clearHintIfInvalid');
-      this.view.setInputValue('cheese head');
-      expect(this.view.clearHintIfInvalid).toHaveBeenCalled();
-    });
-
-    it('should check lang direction', function() {
-      var spy;
-
-      this.$input.css('direction', 'rtl');
-      this.view.onSync('langDirChanged', spy = jasmine.createSpy());
-
-      simulateInputEvent(this.$input);
-
-      expect(this.view.dir).toBe('rtl');
-      expect(this.$hint).toHaveAttr('dir', 'rtl');
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
   describe('#getHint/#setHint', function() {
     it('should act as getter/setter to value of hint', function() {
       this.view.setHint('mountain');
       expect(this.view.getHint()).toBe('mountain');
-    });
-  });
-
-  describe('#resetInputValue', function() {
-    it('should reset input value to last query', function() {
-      this.view.setQuery('cheese');
-      this.view.setInputValue('wine');
-
-      this.view.resetInputValue();
-      expect(this.view.getInputValue()).toBe('cheese');
     });
   });
 
@@ -381,36 +310,36 @@ describe('Input', function() {
 
   describe('#clearHintIfInvalid', function() {
     it('should clear hint if input value is empty string', function() {
-      this.view.setInputValue('');
+      this.$input.val('');
       this.view.setHint('cheese');
       this.view.clearHintIfInvalid();
 
       expect(this.view.getHint()).toBe('');
     });
 
-    it('should clear hint if input value is not prefix of input', function() {
-      this.view.setInputValue('milk');
+    it('should clear hint if input value is not prefix of hint', function() {
+      this.$input.val('milk');
       this.view.setHint('cheese');
       this.view.clearHintIfInvalid();
 
       expect(this.view.getHint()).toBe('');
     });
 
-    it('should clear hint if overflow exists', function() {
-      spyOn(this.view, 'hasOverflow').andReturn(true);
-      this.view.setInputValue('che');
-      this.view.setHint('cheese');
-      this.view.clearHintIfInvalid();
-
-      expect(this.view.getHint()).toBe('');
-    });
-
-    it('should not clear hint if input value is prefix of input', function() {
-      this.view.setInputValue('che');
+    it('should not clear hint if input value is prefix of hint', function() {
+      this.$input.val('che');
       this.view.setHint('cheese');
       this.view.clearHintIfInvalid();
 
       expect(this.view.getHint()).toBe('cheese');
+    });
+
+    it('should clear hint if overflow exists', function() {
+      spyOn(this.view, 'hasOverflow').andReturn(true);
+      this.$input.val('che');
+      this.view.setHint('cheese');
+      this.view.clearHintIfInvalid();
+
+      expect(this.view.getHint()).toBe('');
     });
   });
 
@@ -418,31 +347,15 @@ describe('Input', function() {
     it('should return true if the input has overflow text', function() {
       var longStr = new Array(1000).join('a');
 
-      this.view.setInputValue(longStr);
+      this.$input.val(longStr);
       expect(this.view.hasOverflow()).toBe(true);
     });
 
     it('should return false if the input has no overflow text', function() {
       var shortStr = 'aah';
 
-      this.view.setInputValue(shortStr);
+      this.$input.val(shortStr);
       expect(this.view.hasOverflow()).toBe(false);
-    });
-  });
-
-  describe('#isCursorAtEnd', function() {
-    it('should return true if the text cursor is at the end', function() {
-      this.view.setInputValue('boo');
-
-      setCursorPosition(this.$input, 3);
-      expect(this.view.isCursorAtEnd()).toBe(true);
-    });
-
-    it('should return false if the text cursor is not at the end', function() {
-      this.view.setInputValue('boo');
-
-      setCursorPosition(this.$input, 1);
-      expect(this.view.isCursorAtEnd()).toBe(false);
     });
   });
 
@@ -462,7 +375,7 @@ describe('Input', function() {
       expect($input.off).toHaveBeenCalledWith('.tt');
     });
 
-    it('should set references to DOM elements to dummy element', function() {
+    it('should set DOM element references to dummy element', function() {
       var $hint, $input, $overflowHelper;
 
       $hint = this.view.$hint;
@@ -504,22 +417,5 @@ describe('Input', function() {
     $node.trigger($e);
 
     return $e;
-  }
-
-  function setCursorPosition($input, pos) {
-    var input = $input[0], range;
-
-    if (input.setSelectionRange) {
-      input.focus();
-      input.setSelectionRange(pos, pos);
-    }
-
-    else if (input.createTextRange) {
-      range = input.createTextRange();
-      range.collapse(true);
-      range.moveEnd('character', pos);
-      range.moveStart('character', pos);
-      range.select();
-    }
   }
 });
