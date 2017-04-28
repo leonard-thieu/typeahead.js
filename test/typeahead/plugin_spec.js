@@ -99,30 +99,6 @@ describe('$plugin', function() {
     expect(this.$input.typeahead('select', body)).toBe(false);
   });
 
-  it('#autocomplete should autocomplete to selectable', function() {
-    var $el;
-
-    // activate and set val to render some selectables
-    this.$input.typeahead('activate');
-    this.$input.typeahead('val', 'o');
-    this.$input.typeahead('open');
-    $el = $('.tt-selectable').first();
-
-    expect(this.$input.typeahead('autocomplete', $el)).toBe(true);
-    expect(this.$input.typeahead('val')).toBe('1');
-  });
-
-  it('#autocomplete should return false if not valid selectable', function() {
-    var body;
-
-    // activate and set val to render some selectables
-    this.$input.typeahead('activate');
-    this.$input.typeahead('val', 'o');
-    body = document.body;
-
-    expect(this.$input.typeahead('autocomplete', body)).toBe(false);
-  });
-
   it('#moveCursor should move cursor', function() {
     var $el;
 
@@ -137,18 +113,7 @@ describe('$plugin', function() {
     expect($el).toHaveClass('tt-cursor');
   });
 
-  it('#select should return false if not valid selectable', function() {
-    var body;
-
-    // activate and set val to render some selectables
-    this.$input.typeahead('activate');
-    this.$input.typeahead('val', 'o');
-    body = document.body;
-
-    expect(this.$input.typeahead('select', body)).toBe(false);
-  });
-
-  it('#val() should typeahead value of element', function() {
+  it('#val() should get typeahead value of element', function() {
     var $els;
 
     this.$input.typeahead('val', 'foo');
@@ -194,7 +159,7 @@ describe('$plugin', function() {
     expect(this.$input.data('tt-typeahead')).toBeFalsy();
   });
 
-  it('#destroy should remove add classes', function() {
+  it('#destroy should remove added classes', function() {
     expect(this.$input).toHaveClass('tt-input');
     this.$input.typeahead('destroy');
     expect(this.$input).not.toHaveClass('tt-input');

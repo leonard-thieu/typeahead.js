@@ -4,6 +4,15 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @typedef {object} Options
+ * @property {WWW.Build.Classes} classNames
+ * @property {boolean} highlight
+ * @property {boolean} hint
+ * @property {boolean} menu
+ * @property {number} minLength
+ */
+
 (function() {
   'use strict';
 
@@ -21,6 +30,10 @@
     // supported signatures:
     // function(o, dataset, dataset, ...)
     // function(o, [dataset, dataset, ...])
+    /**
+     * @param {Options} o
+     * @param datasets
+     */
     initialize: function initialize(o, datasets) {
       var www;
 
@@ -33,11 +46,14 @@
 
       function attach() {
         var $input, $wrapper, $hint, $menu, defaultHint, defaultMenu,
-            eventBus, input, menu, status, typeahead, MenuConstructor;
+          eventBus, input, menu, status, typeahead, MenuConstructor;
 
         // highlight is a top-level config that needs to get inherited
         // from all of the datasets
-        _.each(datasets, function(d) { d.highlight = !!o.highlight; });
+        _.each(datasets, function(d) {
+          //noinspection PointlessBooleanExpressionJS
+          d.highlight = !!o.highlight;
+        });
 
         $input = $(this);
         $wrapper = $(www.html.wrapper);
@@ -93,6 +109,8 @@
       }
     },
 
+    // region Toggle
+
     isEnabled: function isEnabled() {
       var enabled = false;
 
@@ -109,6 +127,10 @@
       ttEach(this, function(t) { t.disable(); });
       return this;
     },
+
+    // endregion
+
+    // region Active
 
     isActive: function isActive() {
       var active = false;
@@ -127,6 +149,10 @@
       return this;
     },
 
+    // endregion
+
+    // region Visible
+
     isOpen: function isOpen() {
       var open = false;
 
@@ -144,26 +170,9 @@
       return this;
     },
 
-    select: function select(el) {
-      var success = false, $el = $(el);
+    // endregion
 
-      ttEach(this.first(), function(t) { success = t.select($el); });
-      return success;
-    },
-
-    autocomplete: function autocomplete(el) {
-      var success = false, $el = $(el);
-
-      ttEach(this.first(), function(t) { success = t.autocomplete($el); });
-      return success;
-    },
-
-    moveCursor: function moveCursoe(delta) {
-      var success = false;
-
-      ttEach(this.first(), function(t) { success = t.moveCursor(delta); });
-      return success;
-    },
+    // region Query
 
     // mirror jQuery#val functionality: reads operate on first match,
     // write operates on all matches
@@ -180,6 +189,26 @@
         return this;
       }
     },
+
+    // endregion
+
+    // region Functions
+
+    select: function select(el) {
+      var success = false, $el = $(el);
+
+      ttEach(this.first(), function(t) { success = t.select($el); });
+      return success;
+    },
+
+    moveCursor: function moveCursoe(delta) {
+      var success = false;
+
+      ttEach(this.first(), function(t) { success = t.moveCursor(delta); });
+      return success;
+    },
+
+    // endregion
 
     destroy: function destroy() {
       ttEach(this, function(typeahead, $input) {
