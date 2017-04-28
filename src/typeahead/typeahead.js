@@ -4,6 +4,9 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
+/**
+ * @mixes {Build}
+ */
 var Typeahead = (function() {
   'use strict';
 
@@ -74,7 +77,7 @@ var Typeahead = (function() {
   _.mixin(Typeahead.prototype, {
 
     // here's where hacks get applied and we don't feel bad about it
-    _hacks: function hacks() {
+    _hacks: function _hacks() {
       var $input, $menu;
 
       // these default values are to make testing easier
@@ -109,28 +112,29 @@ var Typeahead = (function() {
 
     // region ### menu
 
-    _onSelectableClicked: function onSelectableClicked(type, $el) {
+    _onSelectableClicked: function _onSelectableClicked(type, $el) {
       this.select($el);
     },
 
-    _onDatasetCleared: function onDatasetCleared() {
+    _onDatasetCleared: function _onDatasetCleared() {
       this._updateHint();
     },
 
-    _onDatasetRendered: function onDatasetRendered(type, suggestions, async, dataset) {
+    _onDatasetRendered: function _onDatasetRendered(type, suggestions, async, dataset) {
       this._updateHint();
+      this.moveCursor(0);
       this.eventBus.trigger('render', suggestions, async, dataset);
     },
 
-    _onAsyncRequested: function onAsyncRequested(type, dataset, query) {
+    _onAsyncRequested: function _onAsyncRequested(type, dataset, query) {
       this.eventBus.trigger('asyncrequest', query, dataset);
     },
 
-    _onAsyncCanceled: function onAsyncCanceled(type, dataset, query) {
+    _onAsyncCanceled: function _onAsyncCanceled(type, dataset, query) {
       this.eventBus.trigger('asynccancel', query, dataset);
     },
 
-    _onAsyncReceived: function onAsyncReceived(type, dataset, query) {
+    _onAsyncReceived: function _onAsyncReceived(type, dataset, query) {
       this.eventBus.trigger('asyncreceive', query, dataset);
     },
 
@@ -138,13 +142,13 @@ var Typeahead = (function() {
 
     // region ### input
 
-    _onFocused: function onFocused() {
+    _onFocused: function _onFocused() {
       if (this.activate()) {
         this._minLengthMet() && this.menu.update(this.input.getQuery());
       }
     },
 
-    _onBlurred: function onBlurred() {
+    _onBlurred: function _onBlurred() {
       if (this.deactivate()) {
         if (this.input.hasQueryChangedSinceLastFocus()) {
           this.eventBus.trigger('change', this.input.getQuery());
@@ -152,7 +156,7 @@ var Typeahead = (function() {
       }
     },
 
-    _onSelect: function onSelect(type, $e) {
+    _onSelect: function _onSelect(type, $e) {
       var $selectable;
 
       if (this.isActive() && this.isOpen()) {
@@ -165,7 +169,7 @@ var Typeahead = (function() {
       }
     },
 
-    _onOpen: function onOpen(type, $e) {
+    _onOpen: function _onOpen(type, $e) {
       if (this.isActive() && !this.isOpen()) {
         this.open();
         $e.preventDefault();
@@ -173,7 +177,7 @@ var Typeahead = (function() {
       }
     },
 
-    _onClose: function onClose(type, $e) {
+    _onClose: function _onClose(type, $e) {
       if (this.isActive()) {
         this.close();
         $e.preventDefault();
@@ -181,7 +185,7 @@ var Typeahead = (function() {
       }
     },
 
-    _onMoveUp: function onMoveUp(type, $e) {
+    _onMoveUp: function _onMoveUp(type, $e) {
       if (this.isActive() && this.isOpen()) {
         this.moveCursor(-1);
         $e.preventDefault();
@@ -189,7 +193,7 @@ var Typeahead = (function() {
       }
     },
 
-    _onMoveDown: function onMoveDown(type, $e) {
+    _onMoveDown: function _onMoveDown(type, $e) {
       if (this.isActive() && this.isOpen()) {
         this.moveCursor(+1);
         $e.preventDefault();
@@ -197,7 +201,7 @@ var Typeahead = (function() {
       }
     },
 
-    _onQueryChanged: function onQueryChanged(e, query) {
+    _onQueryChanged: function _onQueryChanged(e, query) {
       if (this.isActive() && this.isOpen()) {
         if (this._minLengthMet(query)) {
           this.menu.update(query);
@@ -208,13 +212,13 @@ var Typeahead = (function() {
       }
     },
 
-    _onWhitespaceChanged: function onWhitespaceChanged() {
-      if (this._openIfActive()) {
+    _onWhitespaceChanged: function _onWhitespaceChanged() {
+      if (this.isActive() && this.open()) {
         this._updateHint();
       }
     },
 
-    _onLangDirChanged: function onLangDirChanged(e, dir) {
+    _onLangDirChanged: function _onLangDirChanged(e, dir) {
       if (this.dir !== dir) {
         this.dir = dir;
         this.menu.setLanguageDirection(dir);
@@ -227,17 +231,13 @@ var Typeahead = (function() {
 
     // region ### private
 
-    _openIfActive: function openIfActive() {
-      this.isActive() && this.open();
-    },
-
-    _minLengthMet: function minLengthMet(query) {
+    _minLengthMet: function _minLengthMet(query) {
       query = _.isString(query) ? query : (this.input.getQuery() || '');
 
       return query.length >= this.minLength;
     },
 
-    _updateHint: function updateHint() {
+    _updateHint: function _updateHint() {
       var $selectable, data, val, query, escapedQuery, frontMatchRegEx, match;
 
       $selectable = this.menu.getTopSelectable();
@@ -265,6 +265,10 @@ var Typeahead = (function() {
 
     // region ### public
 
+    // region Toggle
+
+    // Toggle feature allows consumer to toggle on and off the plugin.
+
     isEnabled: function isEnabled() {
       return this.enabled;
     },
@@ -276,6 +280,12 @@ var Typeahead = (function() {
     disable: function disable() {
       this.enabled = false;
     },
+
+    // endregion
+
+    // region Activation
+
+    // Activation feature ensures menu closes when the input loses focus.
 
     isActive: function isActive() {
       return this.active;
@@ -321,6 +331,12 @@ var Typeahead = (function() {
       }
     },
 
+    // endregion
+
+    // region Visibility
+
+    // Visibility feature opens and closes the suggestions menu.
+
     isOpen: function isOpen() {
       return this.menu.isOpen();
     },
@@ -329,7 +345,6 @@ var Typeahead = (function() {
       if (!this.isOpen() && !this.eventBus.before('open')) {
         this.menu.update(this.input.getQuery());
         this.menu.open();
-        this.moveCursor(0);
         this._updateHint();
         this.eventBus.trigger('open');
       }
@@ -341,11 +356,14 @@ var Typeahead = (function() {
       if (this.isOpen() && !this.eventBus.before('close')) {
         this.menu.close();
         this.input.clearHint();
-        this.input.resetInputValue();
         this.eventBus.trigger('close');
       }
       return !this.isOpen();
     },
+
+    // endregion
+
+    // region Query
 
     setVal: function setVal(val) {
       // expect val to be a string, so be safe, and coerce
@@ -355,6 +373,10 @@ var Typeahead = (function() {
     getVal: function getVal() {
       return this.input.getQuery();
     },
+
+    // endregion
+
+    // region Functions
 
     select: function select($selectable) {
       var data = this.menu.getSelectableData($selectable);
@@ -366,24 +388,6 @@ var Typeahead = (function() {
         this.close();
 
         // return true if selection succeeded
-        return true;
-      }
-
-      return false;
-    },
-
-    autocomplete: function autocomplete($selectable) {
-      var query, data, isValid;
-
-      query = this.input.getQuery();
-      data = this.menu.getSelectableData($selectable);
-      isValid = data && query !== data.val;
-
-      if (isValid && !this.eventBus.before('autocomplete', data.obj, data.dataset)) {
-        this.input.setQuery(data.val);
-        this.eventBus.trigger('autocomplete', data.obj, data.dataset);
-
-        // return true if autocompletion succeeded
         return true;
       }
 
@@ -417,6 +421,8 @@ var Typeahead = (function() {
 
       return false;
     },
+
+    // endregion
 
     destroy: function destroy() {
       this.input.destroy();

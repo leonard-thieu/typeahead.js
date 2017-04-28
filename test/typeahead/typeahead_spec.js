@@ -6,8 +6,11 @@ describe('Typeahead', function() {
   beforeEach(function() {
     var $fixture;
 
+    //noinspection JSUnresolvedVariable
     jasmine.Input.useMock();
+    //noinspection JSUnresolvedVariable
     jasmine.Dataset.useMock();
+    //noinspection JSUnresolvedVariable
     jasmine.Menu.useMock();
 
     setFixtures('<input type="text">');
@@ -35,6 +38,7 @@ describe('Typeahead', function() {
       payload = $('<foo>');
     });
 
+    // Is this a correct state? If the typeahead is deactivated, the menu should be closed, so a selectable shouldn't be clickable.
     describe('when idle', function() {
       beforeEach(function() {
         this.view.deactivate();
@@ -115,41 +119,29 @@ describe('Typeahead', function() {
       eventName = 'datasetRendered';
     });
 
-    describe('when idle', function() {
-      beforeEach(function() {
-        this.view.deactivate();
-      });
+    it('should update the hint', function() {
+      this.input.hasOverflow.andReturn(false);
+      this.menu.getTopSelectable.andReturn($('<fiz>'));
+      this.menu.getSelectableData.andReturn(testData);
+      this.input.getInputValue.andReturn(testData.val.slice(0, 2));
 
-      it('should do nothing', function() {
-        spyOn(this.view, '_onDatasetRendered');
-        this.menu.trigger(eventName, ['foo'], false, 'bar');
-        expect(this.view._onDatasetRendered).not.toHaveBeenCalled();
-      });
+      this.menu.trigger(eventName, ['foo'], false, 'bar');
+
+      expect(this.input.setHint).toHaveBeenCalled();
     });
 
-    describe('when active', function() {
-      beforeEach(function() {
-        this.view.activate();
-      });
+    it('should move cursor to top selectable', function() {
+      this.menu.trigger(eventName, ['foo'], false, 'bar');
 
-      it('should update the hint', function() {
-        this.input.hasOverflow.andReturn(false);
-        this.menu.getTopSelectable.andReturn($('<fiz>'));
-        this.menu.getSelectableData.andReturn(testData);
-        this.input.getInputValue.andReturn(testData.val.slice(0, 2));
+      expect(this.menu.getActiveSelectable()).toBe(this.menu.getTopSelectable());
+    });
 
-        this.menu.trigger(eventName, ['foo'], false, 'bar');
+    it('should trigger typeahead:render', function() {
+      var spy = jasmine.createSpy();
 
-        expect(this.input.setHint).toHaveBeenCalled();
-      });
-
-      it('should trigger typeahead:render', function() {
-        var spy = jasmine.createSpy();
-
-        this.$input.on('typeahead:render', spy);
-        this.menu.trigger(eventName, ['foo'], false, 'bar');
-        expect(spy).toHaveBeenCalledWith(jasmine.any(Object), ['foo'], false, 'bar');
-      });
+      this.$input.on('typeahead:render', spy);
+      this.menu.trigger(eventName, ['foo'], false, 'bar');
+      expect(spy).toHaveBeenCalledWith(jasmine.any(Object), ['foo'], false, 'bar');
     });
   });
 
@@ -159,34 +151,16 @@ describe('Typeahead', function() {
     beforeEach(function() {
       eventName = 'datasetCleared';
     });
+    
+    it('should update the hint', function() {
+      this.input.hasOverflow.andReturn(false);
+      this.menu.getTopSelectable.andReturn($('<fiz>'));
+      this.menu.getSelectableData.andReturn(testData);
+      this.input.getInputValue.andReturn(testData.val.slice(0, 2));
 
-    describe('when idle', function() {
-      beforeEach(function() {
-        this.view.deactivate();
-      });
+      this.menu.trigger(eventName);
 
-      it('should do nothing', function() {
-        spyOn(this.view, '_onDatasetCleared');
-        this.menu.trigger(eventName);
-        expect(this.view._onDatasetCleared).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when active', function() {
-      beforeEach(function() {
-        this.view.activate();
-      });
-
-      it('should update the hint', function() {
-        this.input.hasOverflow.andReturn(false);
-        this.menu.getTopSelectable.andReturn($('<fiz>'));
-        this.menu.getSelectableData.andReturn(testData);
-        this.input.getInputValue.andReturn(testData.val.slice(0, 2));
-
-        this.menu.trigger(eventName);
-
-        expect(this.input.setHint).toHaveBeenCalled();
-      });
+      expect(this.input.setHint).toHaveBeenCalled();
     });
   });
 
@@ -333,26 +307,7 @@ describe('Typeahead', function() {
         expect(payload.stopImmediatePropagation).toHaveBeenCalled();
       });
 
-      it('should not select selectable if there is no active one', function() {
-        var $el;
-
-        $el = $('<bah>');
-        spyOn(this.view, 'select');
-
-        this.input.trigger(eventName, payload);
-
-        expect(this.view.select).not.toHaveBeenCalledWith($el);
-      });
-
-      it('should not prevent default if no active selectable', function() {
-        spyOn(this.view, 'select').andReturn(true);
-
-        this.input.trigger(eventName, payload);
-
-        expect(payload.preventDefault).not.toHaveBeenCalled();
-      });
-
-      it('should not prevent default if selection of active selectable fails', function() {
+      it('should not prevent default or stop immediate propagation if selection of active selectable fails', function() {
         var $el;
 
         $el = $('<bah>');
@@ -362,6 +317,7 @@ describe('Typeahead', function() {
         this.input.trigger(eventName, payload);
 
         expect(payload.preventDefault).not.toHaveBeenCalled();
+        expect(payload.stopImmediatePropagation).not.toHaveBeenCalled();
       });
     });
   });
@@ -539,9 +495,10 @@ describe('Typeahead', function() {
         this.view.deactivate();
       });
 
-      it('should not open menu', function() {
+      it('should not update menu', function() {
         this.input.trigger(eventName, payload);
         expect(this.menu.open).not.toHaveBeenCalled();
+        expect(this.menu.empty).not.toHaveBeenCalled();
       });
     });
 
@@ -556,6 +513,13 @@ describe('Typeahead', function() {
         this.input.trigger(eventName, payload);
 
         expect(this.menu.empty).toHaveBeenCalled();
+      });
+
+      it('should close menu if minLength is not satisfied', function() {
+        this.view.minLength = 100;
+        this.input.trigger(eventName, payload);
+
+        expect(this.menu.close).toHaveBeenCalled();
       });
 
       it('should update menu if minLength is satisfied', function() {
@@ -636,18 +600,6 @@ describe('Typeahead', function() {
     });
   });
 
-  describe('#isActive', function() {
-    it('should return true if active', function() {
-      this.view.activate();
-      expect(this.view.isActive()).toBe(true);
-    });
-
-    it('should return false if active', function() {
-      this.view.deactivate();
-      expect(this.view.isActive()).toBe(false);
-    });
-  });
-
   describe('#isEnabled', function() {
     it('should returned enabled status', function() {
       this.view.enable();
@@ -668,6 +620,18 @@ describe('Typeahead', function() {
     it('should set enabled to false', function() {
       this.view.disable();
       expect(this.view.isEnabled()).toBe(false);
+    });
+  });
+
+  describe('#isActive', function() {
+    it('should return true if active', function() {
+      this.view.activate();
+      expect(this.view.isActive()).toBe(true);
+    });
+
+    it('should return false if idle', function() {
+      this.view.deactivate();
+      expect(this.view.isActive()).toBe(false);
     });
   });
 
@@ -787,16 +751,16 @@ describe('Typeahead', function() {
         expect(spy2).not.toHaveBeenCalled();
       });
 
-      it('should close', function() {
-        spyOn(this.view, 'close');
-        this.view.deactivate();
-        expect(this.view.close).toHaveBeenCalled();
-      });
-
       it('should change state to idle', function() {
         expect(this.view.isActive()).toBe(true);
         this.view.deactivate();
         expect(this.view.isActive()).toBe(false);
+      });
+
+      it('should close', function() {
+        spyOn(this.view, 'close');
+        this.view.deactivate();
+        expect(this.view.close).toHaveBeenCalled();
       });
 
       it('should trigger typeahead:idle if not canceled', function() {
@@ -873,17 +837,7 @@ describe('Typeahead', function() {
         expect(this.menu.open).toHaveBeenCalled();
       });
 
-      it('should select first selectable', function() {
-        var spy = spyOn(this.view, 'moveCursor');
-
-        this.view.open();
-
-        expect(spy).toHaveBeenCalledWith(0);
-      })
-
-      it('should update hint if active', function() {
-        spyOn(this.view, 'isActive').andReturn(true);
-
+      it('should update hint', function() {
         this.input.hasOverflow.andReturn(false);
         this.menu.getTopSelectable.andReturn($('<fiz>'));
         this.menu.getSelectableData.andReturn(testData);
@@ -894,7 +848,7 @@ describe('Typeahead', function() {
         expect(this.input.setHint).toHaveBeenCalled();
       });
 
-      it('should trigger typeahead:open if not canceled', function() {
+      it('should trigger typeahead:open', function() {
         var spy = jasmine.createSpy();
 
         this.$input.on('typeahead:open', spy);
@@ -1020,7 +974,7 @@ describe('Typeahead', function() {
       expect(spy2).not.toHaveBeenCalled();
     });
 
-    it('should update query', function() {
+    it('should update query silently', function() {
       this.menu.getSelectableData.andReturn(testData);
       this.view.select($('<bah>'));
       expect(this.input.setQuery).toHaveBeenCalledWith(testData.val, true);
@@ -1047,63 +1001,6 @@ describe('Typeahead', function() {
     });
   });
 
-  describe('#autocomplete', function() {
-    it('should abort if the query matches the top suggestion', function() {
-      var spy;
-
-      this.input.getQuery.andReturn(testData.val);
-      this.menu.getSelectableData.andReturn(testData);
-      this.$input.on('typeahead:beforeautocomplete', spy = jasmine.createSpy());
-
-      this.view.autocomplete($('<bah>'));
-
-      expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('should trigger typeahead:beforeautocomplete', function() {
-      var spy;
-
-      this.menu.getSelectableData.andReturn(testData);
-      this.$input.on('typeahead:beforeautocomplete', spy = jasmine.createSpy());
-
-      this.view.autocomplete($('<bah>'));
-
-      expect(spy).toHaveBeenCalledWith(jasmine.any(Object), testData.obj, testData.dataset);
-    });
-
-    it('should support cancellation', function() {
-      var spy1, spy2;
-
-      spy1 = jasmine.createSpy().andCallFake(prevent);
-      spy2 = jasmine.createSpy();
-      this.$input.on('typeahead:beforeautocomplete', spy1);
-      this.$input.on('typeahead:autocomplete', spy2);
-      this.menu.getSelectableData.andReturn(testData);
-
-      this.view.autocomplete($('<bah>'));
-
-      expect(spy1).toHaveBeenCalled();
-      expect(spy2).not.toHaveBeenCalled();
-    });
-
-    it('should update the query', function() {
-      this.menu.getSelectableData.andReturn(testData);
-      this.view.autocomplete($('<bah>'));
-      expect(this.input.setQuery).toHaveBeenCalledWith(testData.val);
-    });
-
-    it('should trigger typeahead:autocomplete', function() {
-      var spy;
-
-      this.menu.getSelectableData.andReturn(testData);
-      this.$input.on('typeahead:autocomplete', spy = jasmine.createSpy());
-
-      this.view.autocomplete($('<bah>'));
-
-      expect(spy).toHaveBeenCalledWith(jasmine.any(Object), testData.obj, testData.dataset);
-    });
-  });
-
   describe('#moveCursor', function() {
     beforeEach(function() {
       this.input.getQuery.andReturn('foo');
@@ -1112,9 +1009,9 @@ describe('Typeahead', function() {
     it('should move cursor if minLength is not satisfied', function() {
       var spy = jasmine.createSpy();
 
+      this.menu.selectableRelativeToCursor.andReturn($());
       this.view.minLength = 100;
       this.menu.update.andReturn(true);
-      this.menu.selectableRelativeToCursor.andReturn($());
 
       this.$input.on('typeahead:beforecursorchange', spy);
 
@@ -1127,6 +1024,7 @@ describe('Typeahead', function() {
       var spy = jasmine.createSpy();
 
       this.menu.update.andReturn(false);
+
       this.menu.selectableRelativeToCursor.andReturn($());
 
       this.$input.on('typeahead:beforecursorchange', spy);
@@ -1173,36 +1071,6 @@ describe('Typeahead', function() {
       this.$input.on('typeahead:beforecursorchange', spy);
       this.view.moveCursor(1);
       expect(this.menu.setCursor).not.toHaveBeenCalled();
-    });
-
-    it('should update the input value if moved to selectable', function() {
-      this.menu.getSelectableData.andReturn(testData);
-      this.menu.selectableRelativeToCursor.andReturn($());
-
-      this.view.moveCursor(1);
-      expect(this.input.setInputValue).toHaveBeenCalledWith(testData.val);
-    });
-
-    it('should reset the input value if moved to input', function() {
-      this.menu.selectableRelativeToCursor.andReturn($());
-      this.view.moveCursor(1);
-      expect(this.input.resetInputValue).toHaveBeenCalled();
-    });
-
-    it('should update the hint', function() {
-      this.input.hasOverflow.andReturn(false);
-      this.menu.selectableRelativeToCursor.andReturn($());
-      this.menu.getTopSelectable.andReturn($('<fiz>'));
-      this.menu.getSelectableData.andCallFake(fake);
-      this.input.getInputValue.andReturn(testData.val.slice(0, 1));
-
-      this.view.moveCursor(1);
-
-      expect(this.input.setHint).toHaveBeenCalledWith(testData.val);
-
-      function fake($el) {
-        return ($el && $el.prop('tagName') === 'FIZ') ? testData : null;
-      }
     });
 
     it('should trigger cursorchange after setting cursor', function() {
